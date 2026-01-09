@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import logo from "@/assets/logo.jpeg";
 
 const Footer = () => {
   const productLinks = [
@@ -21,8 +23,9 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div>
-            <a href="#home" className="inline-block mb-6">
-              <span className="font-display text-2xl font-bold led-text">
+            <a href="#home" className="inline-flex items-center gap-3 mb-6">
+              <img src={logo} alt="ImpexSeven Logo" className="h-12 w-auto rounded" />
+              <span className="font-display text-xl font-bold led-text">
                 IMPEX<span className="text-gradient-gold">SEVEN</span>
               </span>
             </a>
