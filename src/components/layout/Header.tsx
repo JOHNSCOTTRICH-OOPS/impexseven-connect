@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import UserMenu from "@/components/auth/UserMenu";
+import logo from "@/assets/logo.jpeg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,14 +21,22 @@ const Header = () => {
     { href: "#contact", label: "Contact" },
   ];
 
+  const scrollToContact = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <a href="#home" className="flex items-center gap-2">
-              <span className="font-display text-2xl font-bold led-text">
+            <a href="#home" className="flex items-center gap-3">
+              <img src={logo} alt="ImpexSeven Logo" className="h-12 w-auto rounded" />
+              <span className="font-display text-xl font-bold led-text hidden sm:block">
                 IMPEX<span className="text-gradient-gold">SEVEN</span>
               </span>
             </a>
@@ -56,7 +66,7 @@ const Header = () => {
                   Sign In
                 </Button>
               )}
-              <Button variant="led" size="sm">
+              <Button variant="led" size="sm" onClick={scrollToContact}>
                 Get Quote
               </Button>
             </div>
@@ -93,7 +103,7 @@ const Header = () => {
                       Sign In
                     </Button>
                   )}
-                  <Button variant="led" size="sm">
+                  <Button variant="led" size="sm" onClick={() => { scrollToContact(); setIsMenuOpen(false); }}>
                     Get Quote
                   </Button>
                 </div>

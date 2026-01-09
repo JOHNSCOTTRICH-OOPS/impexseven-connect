@@ -1,8 +1,16 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-spices.jpg";
 import { ArrowRight, Globe, Users } from "lucide-react";
 
 const HeroSection = () => {
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById("products");
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Image with Overlay */}
@@ -56,14 +64,16 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button variant="led" size="xl" className="group">
+            <Button variant="led" size="xl" className="group" onClick={scrollToProducts}>
               <Globe className="mr-2 h-5 w-5" />
               Explore Products
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button variant="gold" size="xl" className="group">
-              <Users className="mr-2 h-5 w-5" />
-              Become a Supplier
+            <Button variant="gold" size="xl" className="group" asChild>
+              <Link to="/sell">
+                <Users className="mr-2 h-5 w-5" />
+                Become a Supplier
+              </Link>
             </Button>
           </div>
 

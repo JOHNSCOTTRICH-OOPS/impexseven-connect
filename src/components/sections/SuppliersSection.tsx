@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, CheckCircle2, Handshake, ArrowRight } from "lucide-react";
 
@@ -94,9 +95,11 @@ const SuppliersSection = () => {
 
         {/* CTA */}
         <div className="text-center">
-          <Button variant="gold" size="xl" className="group">
-            Start Your Application
-            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          <Button variant="gold" size="xl" className="group" asChild>
+            <Link to="/sell">
+              Start Your Application
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Link>
           </Button>
         </div>
       </div>
