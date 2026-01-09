@@ -50,6 +50,54 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_products: {
+        Row: {
+          created_at: string
+          expiry_date: string | null
+          expiry_days: number | null
+          id: string
+          location: string
+          max_production: number
+          min_production: number
+          photo_url: string | null
+          price_per_unit: number
+          product_name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expiry_date?: string | null
+          expiry_days?: number | null
+          id?: string
+          location: string
+          max_production: number
+          min_production: number
+          photo_url?: string | null
+          price_per_unit: number
+          product_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expiry_date?: string | null
+          expiry_days?: number | null
+          id?: string
+          location?: string
+          max_production?: number
+          min_production?: number
+          photo_url?: string | null
+          price_per_unit?: number
+          product_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
