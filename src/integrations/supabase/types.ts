@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          quantity_unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          quantity_unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          quantity_unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -50,8 +88,42 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_requests: {
+        Row: {
+          created_at: string
+          id: string
+          items: Json
+          notes: string | null
+          status: string
+          total_estimated: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items: Json
+          notes?: string | null
+          status?: string
+          total_estimated?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          status?: string
+          total_estimated?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_products: {
         Row: {
+          category: string | null
           created_at: string
           expiry_date: string | null
           expiry_days: number | null
@@ -65,8 +137,10 @@ export type Database = {
           status: string
           updated_at: string
           user_id: string
+          verified: boolean
         }
         Insert: {
+          category?: string | null
           created_at?: string
           expiry_date?: string | null
           expiry_days?: number | null
@@ -80,8 +154,10 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id: string
+          verified?: boolean
         }
         Update: {
+          category?: string | null
           created_at?: string
           expiry_date?: string | null
           expiry_days?: number | null
@@ -95,6 +171,49 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      support_requests: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          request_type: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          request_type?: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          request_type?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
