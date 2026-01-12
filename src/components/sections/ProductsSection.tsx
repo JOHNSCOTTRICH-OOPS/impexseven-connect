@@ -1,65 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Download, MessageSquare } from "lucide-react";
+import { ShoppingCart, Eye, ArrowRight, MapPin } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 import spicesImg from "@/assets/spices.jpg";
 import seafoodImg from "@/assets/seafood.jpg";
 import fruitsImg from "@/assets/fruits.jpg";
 import vegetablesImg from "@/assets/vegetables.jpg";
-
 const categories = ["All", "Spices", "Seafood", "Fruits", "Vegetables"];
 
-const products = [
-  {
-    id: 1,
-    name: "Premium Turmeric",
-    category: "Spices",
-    description: "High curcumin content turmeric from Kerala's finest farms",
-    image: spicesImg,
-  },
-  {
-    id: 2,
-    name: "Fresh Tiger Prawns",
-    category: "Seafood",
-    description: "Farm-raised premium prawns, IQF processed for freshness",
-    image: seafoodImg,
-  },
-  {
-    id: 3,
-    name: "Alphonso Mangoes",
-    category: "Fruits",
-    description: "The king of mangoes from Ratnagiri, naturally ripened",
-    image: fruitsImg,
-  },
-  {
-    id: 4,
-    name: "Farm Fresh Vegetables",
-    category: "Vegetables",
-    description: "Organically grown vegetables, freshly harvested",
-    image: vegetablesImg,
-  },
-  {
-    id: 5,
-    name: "Red Chilli Powder",
-    category: "Spices",
-    description: "Premium quality Guntur chillies with perfect heat level",
-    image: spicesImg,
-  },
-  {
-    id: 6,
-    name: "Indian Pomfret",
-    category: "Seafood",
-    description: "Wild-caught silver pomfret from Arabian Sea",
-    image: seafoodImg,
-  },
-];
+// Fallback images for products without photos
+const categoryImages: Record<string, string> = {
+  Spices: spicesImg,
+  Seafood: seafoodImg,
+  Fruits: fruitsImg,
+  Vegetables: vegetablesImg,
+};
+
+interface Product {
+  id: string;
+  product_name: string;
+  category: string | null;
+  location: string;
+  price_per_unit: number;
+  photo_url: string | null;
+  verified: boolean;
+}
 
 const ProductsSection = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from("seller_products")
+        .select("id, product_name, category, location, price_per_unit, photo_url, verified")
+        .eq("status", "active")
+        .limit(6);
+
+      if (!error && data) {
+        setProducts(data);
+      }
+      setLoading(false);
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts =
     activeCategory === "All"
       ? products
       : products.filter((p) => p.category === activeCategory);
+
+  const getProductImage = (product: Product) => {
+    if (product.photo_url) return product.photo_url;
+    return categoryImages[product.category || "Spices"] || spicesImg;
+  };
 
   return (
     <section id="products" className="py-24 relative">
@@ -102,49 +101,96 @@ const ProductsSection = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500"
-            >
-              {/* Image */}
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-medium uppercase tracking-wider">
-                  {product.category}
-                </span>
-              </div>
+        {loading ? (
+          <div className="text-center text-muted-foreground py-12">Loading products...</div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">No products available yet.</p>
+            <Link to="/products">
+              <Button variant="led">
+                Browse Marketplace
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500"
+              >
+                {/* Image */}
+                <div className="relative h-56 overflow-hidden">
+                  <img
+                    src={getProductImage(product)}
+                    alt={product.product_name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
+                  
+                  {/* Category Badge */}
+                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-medium uppercase tracking-wider">
+                    {product.category || "General"}
+                  </span>
+                  
+                  {/* Verified/Unverified Badge */}
+                  <Badge 
+                    variant={product.verified ? "default" : "destructive"}
+                    className="absolute top-4 right-4"
+                  >
+                    {product.verified ? "Verified" : "Unverified"}
+                  </Badge>
+                </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                  {product.name}
-                </h3>
-                <p className="text-muted-foreground text-sm mb-6">
-                  {product.description}
-                </p>
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+                    {product.product_name}
+                  </h3>
+                  
+                  {/* Location & Price */}
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm mb-2">
+                    <MapPin className="w-4 h-4" />
+                    <span>{product.location}</span>
+                  </div>
+                  
+                  <p className="text-primary font-semibold text-lg mb-6">
+                    ${product.price_per_unit.toFixed(2)} / unit
+                  </p>
 
-                {/* Actions */}
-                <div className="flex gap-3">
-                  <Button variant="ledOutline" size="sm" className="flex-1">
-                    <Download className="w-4 h-4 mr-2" />
-                    Catalogue
-                  </Button>
-                  <Button variant="led" size="sm" className="flex-1">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Quote
-                  </Button>
+                  {/* Actions */}
+                  <div className="flex gap-3">
+                    <Link to={`/products/${product.id}`} className="flex-1">
+                      <Button variant="ledOutline" size="sm" className="w-full">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                    </Link>
+                    <Link to={`/products/${product.id}`} className="flex-1">
+                      <Button variant="led" size="sm" className="w-full">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Add to Cart
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* View All Products Link */}
+        {products.length > 0 && (
+          <div className="text-center mt-12">
+            <Link to="/products">
+              <Button variant="led" size="lg">
+                View All Products
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Decorative Elements */}

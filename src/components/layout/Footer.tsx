@@ -4,17 +4,18 @@ import logo from "@/assets/logo.jpeg";
 
 const Footer = () => {
   const productLinks = [
-    { label: "Spices", href: "#products" },
-    { label: "Seafood", href: "#products" },
-    { label: "Fruits", href: "#products" },
-    { label: "Vegetables", href: "#products" },
+    { label: "All Products", href: "/products" },
+    { label: "Spices", href: "/products?category=Spices" },
+    { label: "Seafood", href: "/products?category=Seafood" },
+    { label: "Fruits", href: "/products?category=Fruits" },
+    { label: "Vegetables", href: "/products?category=Vegetables" },
   ];
 
   const companyLinks = [
-    { label: "About Us", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Supplier Program", href: "#suppliers" },
-    { label: "Contact", href: "#contact" },
+    { label: "About Us", href: "/about" },
+    { label: "Sell with Us", href: "/sell" },
+    { label: "Support", href: "/support" },
+    { label: "My Cart", href: "/cart" },
   ];
 
   return (
@@ -57,12 +58,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {productLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -76,12 +77,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {companyLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
