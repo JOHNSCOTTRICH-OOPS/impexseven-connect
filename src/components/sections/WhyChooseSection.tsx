@@ -1,4 +1,6 @@
-import { Award, Clock, Globe, Headphones, Shield, Truck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Award, Clock, Globe, Headphones, Shield, Truck, ArrowRight } from "lucide-react";
 
 const features = [
   {
@@ -89,6 +91,16 @@ const WhyChooseSection = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <Button variant="led" size="lg" asChild>
+            <Link to="/about">
+              Learn More About Us
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
         </div>
       </div>
 

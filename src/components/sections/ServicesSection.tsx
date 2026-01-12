@@ -1,4 +1,6 @@
-import { Ship, Package, Search, Shield, Truck, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Ship, Package, Search, Shield, Truck, Users, ArrowRight } from "lucide-react";
 
 const services = [
   {
@@ -78,6 +80,16 @@ const ServicesSection = () => {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-12">
+          <Button variant="led" size="lg" asChild>
+            <Link to="/support">
+              Learn More About Our Services
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
         </div>
       </div>
 

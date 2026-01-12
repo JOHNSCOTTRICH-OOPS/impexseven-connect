@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { Mail, MapPin, Phone, ArrowRight, ShoppingCart, Users } from "lucide-react";
 
 const ContactSection = () => {
-  const [activeTab, setActiveTab] = useState<"buyer" | "supplier">("buyer");
-
   const contactInfo = [
     {
       icon: Mail,
@@ -91,107 +89,65 @@ const ContactSection = () => {
             </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="card-glass p-8 rounded-2xl">
-            {/* Tab Switcher */}
-            <div className="flex mb-8 p-1 rounded-lg bg-muted/50">
-              <button
-                onClick={() => setActiveTab("buyer")}
-                className={`flex-1 py-3 rounded-md font-medium text-sm uppercase tracking-wider transition-all ${
-                  activeTab === "buyer"
-                    ? "bg-primary text-primary-foreground led-glow"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Buyer Inquiry
-              </button>
-              <button
-                onClick={() => setActiveTab("supplier")}
-                className={`flex-1 py-3 rounded-md font-medium text-sm uppercase tracking-wider transition-all ${
-                  activeTab === "supplier"
-                    ? "bg-secondary text-secondary-foreground gold-glow"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Supplier Form
-              </button>
+          {/* CTA Cards */}
+          <div className="space-y-6">
+            {/* Buyer CTA */}
+            <div className="card-glass p-8 rounded-2xl">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-primary/10">
+                  <ShoppingCart className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-display text-xl font-semibold text-foreground">
+                  For Buyers
+                </h3>
+              </div>
+              <p className="text-muted-foreground mb-6">
+                Explore our marketplace of premium Indian products. Browse verified suppliers 
+                and request quotes for bulk orders.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="led" className="flex-1" asChild>
+                  <Link to="/products">
+                    Browse Products
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+                <Button variant="ledOutline" className="flex-1" asChild>
+                  <Link to="/support">
+                    Contact Support
+                  </Link>
+                </Button>
+              </div>
             </div>
 
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-muted-foreground mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-4 py-3 rounded-lg bg-muted/50 border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                    placeholder="John Doe"
-                  />
+            {/* Supplier CTA */}
+            <div className="card-glass p-8 rounded-2xl border-secondary/30">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-secondary/10">
+                  <Users className="w-6 h-6 text-secondary" />
                 </div>
-                <div>
-                  <label className="block text-sm text-muted-foreground mb-2">
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg bg-muted/50 border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                    placeholder="Company Ltd."
-                  />
-                </div>
+                <h3 className="font-display text-xl font-semibold text-foreground">
+                  For Suppliers
+                </h3>
               </div>
-
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  className="w-full px-4 py-3 rounded-lg bg-muted/50 border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                  placeholder="john@company.com"
-                />
+              <p className="text-muted-foreground mb-6">
+                Join our network of verified suppliers. List your products and connect 
+                with international buyers looking for quality Indian exports.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="gold" className="flex-1" asChild>
+                  <Link to="/sell">
+                    List Your Products
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+                <Button variant="outline" className="flex-1" asChild>
+                  <Link to="/support">
+                    Get Help
+                  </Link>
+                </Button>
               </div>
-
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">
-                  {activeTab === "buyer"
-                    ? "Products Interested In"
-                    : "Products You Offer"}
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 rounded-lg bg-muted/50 border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                  placeholder={
-                    activeTab === "buyer"
-                      ? "e.g., Turmeric, Mangoes, Seafood"
-                      : "e.g., Rice, Vegetables, Spices"
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">
-                  Message
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-muted/50 border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground resize-none"
-                  placeholder="Tell us about your requirements..."
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant={activeTab === "buyer" ? "led" : "gold"}
-                size="lg"
-                className="w-full"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Submit {activeTab === "buyer" ? "Inquiry" : "Application"}
-              </Button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
