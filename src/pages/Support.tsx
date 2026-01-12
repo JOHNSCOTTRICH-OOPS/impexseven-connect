@@ -45,6 +45,15 @@ export default function Support() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to submit a support request",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast({
         title: "Missing fields",
@@ -57,7 +66,7 @@ export default function Support() {
     setSubmitting(true);
     try {
       const { error } = await supabase.from("support_requests").insert({
-        user_id: user?.id || null,
+        user_id: user.id,
         name: formData.name,
         company_name: formData.company_name || null,
         email: formData.email,
@@ -84,7 +93,7 @@ export default function Support() {
       console.error("Error submitting support request:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to send message",
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
     } finally {
