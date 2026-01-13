@@ -38,9 +38,6 @@ interface Product {
   created_at: string;
 }
 
-// Owner user ID for verification access
-const OWNER_USER_ID = "f10ea91f-f1e1-4479-b13d-2fd7c97b6961";
-
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
@@ -49,6 +46,7 @@ export default function ProductDetail() {
   const [quantityUnit, setQuantityUnit] = useState("items");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -58,6 +56,27 @@ export default function ProductDetail() {
       fetchProduct();
     }
   }, [id]);
+
+  // Check admin status when user changes
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase.rpc('is_admin');
+        if (error) throw error;
+        setIsAdmin(data === true);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   const fetchProduct = async () => {
     try {
@@ -87,27 +106,28 @@ export default function ProductDetail() {
   };
 
   const toggleVerification = async () => {
-    if (!product || user?.id !== OWNER_USER_ID) return;
+    if (!product || !isAdmin) return;
 
     setVerifying(true);
     try {
-      const { error } = await supabase
-        .from("seller_products")
-        .update({ verified: !product.verified })
-        .eq("id", product.id);
+      // Use secure RPC function that validates admin role server-side
+      const { data, error } = await supabase.rpc('toggle_product_verification', {
+        _product_id: product.id
+      });
 
       if (error) throw error;
 
-      setProduct({ ...product, verified: !product.verified });
+      const newVerifiedStatus = data === true;
+      setProduct({ ...product, verified: newVerifiedStatus });
       toast({
-        title: product.verified ? "Product unverified" : "Product verified",
-        description: `Product has been marked as ${product.verified ? "unverified" : "verified"}`,
+        title: newVerifiedStatus ? "Product verified" : "Product unverified",
+        description: `Product has been marked as ${newVerifiedStatus ? "verified" : "unverified"}`,
       });
     } catch (error: any) {
       console.error("Error updating verification:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update verification status",
+        description: "Failed to update verification status. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -152,8 +172,6 @@ export default function ProductDetail() {
       </div>
     );
   }
-
-  const isOwner = user?.id === OWNER_USER_ID;
 
   return (
     <div className="min-h-screen bg-background">
@@ -312,8 +330,8 @@ export default function ProductDetail() {
                   Add to Cart
                 </Button>
 
-                {/* Owner Verification Toggle */}
-                {isOwner && (
+                {/* Admin Verification Toggle */}
+                {isAdmin && (
                   <Button
                     variant={product.verified ? "outline" : "gold"}
                     size="lg"
