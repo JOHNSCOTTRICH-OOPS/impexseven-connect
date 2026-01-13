@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/auth/AuthModal";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 export default function Quote() {
   const { items, clearCart, itemCount } = useCart();
@@ -78,10 +79,9 @@ export default function Quote() {
 
       navigate("/");
     } catch (error: any) {
-      console.error("Error submitting quote:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to submit quote request",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     } finally {

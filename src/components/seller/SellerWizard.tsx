@@ -9,6 +9,7 @@ import StepProductInfo from "./steps/StepProductInfo";
 import StepProductDetails from "./steps/StepProductDetails";
 import StepPricing from "./steps/StepPricing";
 import StepReview from "./steps/StepReview";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 export interface SellerFormData {
   productName: string;
@@ -148,7 +149,7 @@ export default function SellerWizard() {
     } catch (error: any) {
       toast({
         title: "Submission Failed",
-        description: error.message || "Something went wrong. Please try again.",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     } finally {

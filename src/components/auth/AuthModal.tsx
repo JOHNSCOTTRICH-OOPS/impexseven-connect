@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { getAuthError } from "@/lib/errorHandler";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     if (isLogin) {
       const { error } = await signIn(email, password);
       if (error) {
-        toast.error(error.message);
+        toast.error(getAuthError(error));
       } else {
         toast.success("Welcome back!");
         onClose();
@@ -36,7 +37,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     } else {
       const { error } = await signUp(email, password, fullName, userType);
       if (error) {
-        toast.error(error.message);
+        toast.error(getAuthError(error));
       } else {
         toast.success("Account created successfully!");
         onClose();
