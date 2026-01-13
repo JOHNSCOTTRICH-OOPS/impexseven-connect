@@ -276,10 +276,19 @@ export default function ProductDetail() {
                   <Label className="text-foreground mb-2 block">Quantity</Label>
                   <Input
                     type="number"
-                    min={product.min_production}
-                    max={product.max_production}
+                    min={1}
                     value={quantity}
-                    onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        setQuantity(0);
+                      } else {
+                        setQuantity(parseInt(val) || 0);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (quantity < 1) setQuantity(1);
+                    }}
                     className="bg-muted/50 border-border"
                   />
                 </div>
