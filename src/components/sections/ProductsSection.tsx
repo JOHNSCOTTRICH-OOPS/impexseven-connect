@@ -161,13 +161,13 @@ const ProductsSection = () => {
 
                   {/* Actions */}
                   <div className="flex gap-3">
-                    <Link to={`/products/${product.id}`} className="flex-1">
+                    <Link to={`/product/${product.id}`} className="flex-1">
                       <Button variant="ledOutline" size="sm" className="w-full">
                         <Eye className="w-4 h-4 mr-2" />
                         View
                       </Button>
                     </Link>
-                    <Link to={`/products/${product.id}`} className="flex-1">
+                    <Link to={`/product/${product.id}`} className="flex-1">
                       <Button variant="led" size="sm" className="w-full">
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         Add to Cart
