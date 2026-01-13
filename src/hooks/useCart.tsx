@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, useCallback } from "rea
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { useToast } from "./use-toast";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 interface CartItem {
   id: string;
@@ -127,10 +128,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         description: "Item has been added to your cart",
       });
     } catch (error: any) {
-      console.error("Error adding to cart:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to add item to cart",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     }
@@ -151,10 +151,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         description: "Item has been removed from your cart",
       });
     } catch (error: any) {
-      console.error("Error removing from cart:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to remove item",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     }
@@ -171,10 +170,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
       await fetchCart();
     } catch (error: any) {
-      console.error("Error updating quantity:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update quantity",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     }

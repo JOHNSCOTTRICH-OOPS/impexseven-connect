@@ -21,6 +21,7 @@ import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 interface Product {
   id: string;
@@ -124,10 +125,9 @@ export default function ProductDetail() {
         description: `Product has been marked as ${newVerifiedStatus ? "verified" : "unverified"}`,
       });
     } catch (error: any) {
-      console.error("Error updating verification:", error);
       toast({
         title: "Error",
-        description: "Failed to update verification status. Please try again.",
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     } finally {
