@@ -252,6 +252,10 @@ export type Database = {
         Args: { _product_id: string }
         Returns: boolean
       }
+      update_product_status: {
+        Args: { _product_id: string; _status: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
