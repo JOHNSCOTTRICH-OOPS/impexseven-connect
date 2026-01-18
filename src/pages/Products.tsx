@@ -13,8 +13,10 @@ import {
   Archive, 
   Clock, 
   CheckSquare,
-  RotateCcw
+  RotateCcw,
+  Search
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
@@ -45,6 +47,7 @@ export default function Products() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -115,11 +118,19 @@ export default function Products() {
     }
   };
 
-  // Filter by status first, then by category
+  // Filter by status, category, and search query
   const getFilteredProducts = (status: string) => {
     let filtered = products.filter(p => p.status === status);
     if (activeCategory !== "All") {
       filtered = filtered.filter(p => p.category === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.product_name.toLowerCase().includes(query) ||
+        p.location.toLowerCase().includes(query) ||
+        (p.category && p.category.toLowerCase().includes(query))
+      );
     }
     return filtered;
   };
@@ -316,6 +327,18 @@ export default function Products() {
             <p className="text-muted-foreground text-lg">
               Discover premium Indian products from verified suppliers
             </p>
+
+            {/* Search Bar */}
+            <div className="relative max-w-md mx-auto mt-8">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search products by name, location, or category..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-4 py-3 h-12 bg-card border-border rounded-full text-foreground placeholder:text-muted-foreground focus:border-primary/50"
+              />
+            </div>
           </div>
 
           {/* Admin Tabs */}
