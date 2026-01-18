@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Calendar, Globe2, Shield, TrendingUp, User, Building2 } from "lucide-react";
+import { Calendar, Globe2, Shield, TrendingUp, User, Building2, ArrowLeft, ArrowRight } from "lucide-react";
 
 const highlights = [
   {
@@ -22,24 +22,24 @@ const highlights = [
 ];
 
 export default function About() {
-  const [activeView, setActiveView] = useState<"company" | "founder">("company");
-  const [isFlipping, setIsFlipping] = useState(false);
+  const [activeView, setActiveView] = useState<"company" | "founder" | null>(null);
 
-  const handleFlip = (view: "company" | "founder") => {
-    if (view === activeView || isFlipping) return;
-    setIsFlipping(true);
-    setTimeout(() => {
-      setActiveView(view);
-      setIsFlipping(false);
-    }, 300);
+  const handleBoxClick = (view: "company" | "founder") => {
+    setActiveView(view);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
+      <main className="pt-24 pb-16 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-6">
@@ -53,46 +53,98 @@ export default function About() {
               <span className="text-foreground">Get to Know </span>
               <span className="text-gradient-led">ImpexSeven</span>
             </h1>
+
+            <p className="text-muted-foreground text-lg">
+              Click on a section to learn more
+            </p>
           </div>
 
-          {/* Toggle Buttons */}
-          <div className="flex justify-center gap-4 mb-12">
-            <button
-              onClick={() => handleFlip("company")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm uppercase tracking-wider transition-all duration-300 ${
-                activeView === "company"
-                  ? "bg-primary text-primary-foreground led-glow"
-                  : "bg-card border border-border text-muted-foreground hover:border-primary/50 hover:text-primary"
-              }`}
-            >
-              <Building2 className="w-4 h-4" />
-              About Company
-            </button>
-            <button
-              onClick={() => handleFlip("founder")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm uppercase tracking-wider transition-all duration-300 ${
-                activeView === "founder"
-                  ? "bg-secondary text-secondary-foreground gold-glow"
-                  : "bg-card border border-border text-muted-foreground hover:border-secondary/50 hover:text-secondary"
-              }`}
-            >
-              <User className="w-4 h-4" />
-              About Me
-            </button>
+          {/* Two Rectangles with Circle in Middle */}
+          <div className="max-w-6xl mx-auto mb-16">
+            <div className="relative flex items-stretch justify-center gap-0 min-h-[400px]">
+              {/* Left Rectangle - About Company */}
+              <div
+                onClick={() => handleBoxClick("company")}
+                className={`flex-1 cursor-pointer transition-all duration-500 rounded-l-2xl p-8 flex flex-col items-center justify-center text-center border-2 ${
+                  activeView === "company"
+                    ? "bg-primary/20 border-primary led-glow scale-[1.02]"
+                    : "bg-card/80 border-border hover:border-primary/50 hover:bg-card"
+                }`}
+              >
+                <div className={`p-6 rounded-2xl mb-6 transition-all duration-300 ${
+                  activeView === "company" ? "bg-primary/30" : "bg-primary/10"
+                }`}>
+                  <Building2 className={`w-16 h-16 transition-colors duration-300 ${
+                    activeView === "company" ? "text-primary" : "text-primary/70"
+                  }`} />
+                </div>
+                <h2 className={`font-display text-2xl md:text-3xl font-bold mb-3 transition-colors duration-300 ${
+                  activeView === "company" ? "text-primary" : "text-foreground"
+                }`}>
+                  About Company
+                </h2>
+                <p className="text-muted-foreground max-w-xs">
+                  Learn about ImpexSeven's mission, values, and global reach
+                </p>
+              </div>
+
+              {/* Center Circle with Arrow */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-background border-4 flex items-center justify-center transition-all duration-500 ${
+                  activeView === "company" 
+                    ? "border-primary led-glow" 
+                    : activeView === "founder"
+                    ? "border-secondary gold-glow"
+                    : "border-border"
+                }`}>
+                  {activeView === "company" && (
+                    <ArrowLeft className="w-10 h-10 md:w-14 md:h-14 text-primary animate-pulse" />
+                  )}
+                  {activeView === "founder" && (
+                    <ArrowRight className="w-10 h-10 md:w-14 md:h-14 text-secondary animate-pulse" />
+                  )}
+                  {!activeView && (
+                    <div className="w-4 h-4 rounded-full bg-muted-foreground/50 animate-pulse" />
+                  )}
+                </div>
+              </div>
+
+              {/* Right Rectangle - About Me */}
+              <div
+                onClick={() => handleBoxClick("founder")}
+                className={`flex-1 cursor-pointer transition-all duration-500 rounded-r-2xl p-8 flex flex-col items-center justify-center text-center border-2 ${
+                  activeView === "founder"
+                    ? "bg-secondary/20 border-secondary gold-glow scale-[1.02]"
+                    : "bg-card/80 border-border hover:border-secondary/50 hover:bg-card"
+                }`}
+              >
+                <div className={`p-6 rounded-2xl mb-6 transition-all duration-300 ${
+                  activeView === "founder" ? "bg-secondary/30" : "bg-secondary/10"
+                }`}>
+                  <User className={`w-16 h-16 transition-colors duration-300 ${
+                    activeView === "founder" ? "text-secondary" : "text-secondary/70"
+                  }`} />
+                </div>
+                <h2 className={`font-display text-2xl md:text-3xl font-bold mb-3 transition-colors duration-300 ${
+                  activeView === "founder" ? "text-secondary" : "text-foreground"
+                }`}>
+                  About Me
+                </h2>
+                <p className="text-muted-foreground max-w-xs">
+                  Meet the founder and the vision behind ImpexSeven
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Flip Card Container */}
-          <div className="max-w-6xl mx-auto perspective-1000">
-            <div
-              className={`relative transition-all duration-500 transform-style-preserve-3d ${
-                isFlipping ? "opacity-0 scale-95" : "opacity-100 scale-100"
-              }`}
-            >
+          {/* Content Section - Shows based on selection */}
+          {activeView && (
+            <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
               {activeView === "company" ? (
                 /* Company View */
                 <div className="grid lg:grid-cols-2 gap-16 items-start">
                   {/* Company Content */}
-                  <div>
+                  <div className="card-glass p-8 rounded-2xl">
                     <h2 className="section-title text-3xl md:text-4xl mb-6">
                       <span className="text-foreground">Your Trusted </span>
                       <span className="text-gradient-led">Import-Export</span>
@@ -172,7 +224,7 @@ export default function About() {
                   </div>
 
                   {/* Founder Content */}
-                  <div>
+                  <div className="card-glass p-8 rounded-2xl">
                     <h2 className="section-title text-3xl md:text-4xl mb-2">
                       <span className="text-gradient-gold">Meet the Founder</span>
                     </h2>
@@ -201,7 +253,7 @@ export default function About() {
                     </p>
 
                     {/* Contact */}
-                    <div className="card-glass p-4 rounded-xl">
+                    <div className="p-4 rounded-xl bg-secondary/10 border border-secondary/30">
                       <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
                         Connect with me
                       </p>
@@ -213,7 +265,7 @@ export default function About() {
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
       </main>
 
