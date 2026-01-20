@@ -22,6 +22,8 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import ByproductsFlowchart from "@/components/product/ByproductsFlowchart";
+import RelatedProducts from "@/components/product/RelatedProducts";
 
 interface Product {
   id: string;
@@ -188,17 +190,17 @@ export default function ProductDetail() {
             Back to Products
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-3 gap-8">
             {/* Image Section */}
-            <div className="relative">
+            <div className="relative lg:col-span-1">
               {product.photo_url ? (
                 <img
                   src={product.photo_url}
                   alt={product.product_name}
-                  className="w-full h-[500px] object-cover rounded-2xl"
+                  className="w-full h-[400px] object-cover rounded-2xl"
                 />
               ) : (
-                <div className="w-full h-[500px] bg-muted rounded-2xl flex items-center justify-center">
+                <div className="w-full h-[400px] bg-muted rounded-2xl flex items-center justify-center">
                   <span className="text-muted-foreground text-lg">No image available</span>
                 </div>
               )}
@@ -228,52 +230,52 @@ export default function ProductDetail() {
             </div>
 
             {/* Details Section */}
-            <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <div className="lg:col-span-1">
+              <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
                 {product.product_name}
               </h1>
 
               {/* Location */}
-              <div className="flex items-center gap-2 text-muted-foreground mb-6">
+              <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <MapPin className="w-5 h-5" />
-                <span className="text-lg">{product.location}</span>
+                <span className="text-base">{product.location}</span>
               </div>
 
               {/* Price */}
-              <div className="mb-8">
-                <span className="text-4xl font-bold text-gradient-led">
+              <div className="mb-6">
+                <span className="text-3xl font-bold text-gradient-led">
                   ${product.price_per_unit.toFixed(2)}
                 </span>
-                <span className="text-muted-foreground text-lg ml-2">/ unit</span>
+                <span className="text-muted-foreground text-base ml-2">/ unit</span>
               </div>
 
               {/* Product Info */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="card-glass p-4 rounded-xl">
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="card-glass p-3 rounded-xl">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Package className="w-4 h-4" />
-                    <span className="text-sm">Available Range</span>
+                    <span className="text-xs">Available Range</span>
                   </div>
-                  <p className="font-semibold text-foreground">
+                  <p className="font-semibold text-foreground text-sm">
                     {product.min_production} - {product.max_production} units
                   </p>
                 </div>
 
-                <div className="card-glass p-4 rounded-xl">
+                <div className="card-glass p-3 rounded-xl">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Calendar className="w-4 h-4" />
-                    <span className="text-sm">Shelf Life</span>
+                    <span className="text-xs">Shelf Life</span>
                   </div>
-                  <p className="font-semibold text-foreground">
+                  <p className="font-semibold text-foreground text-sm">
                     {product.expiry_days ? `${product.expiry_days} days` : "N/A"}
                   </p>
                 </div>
               </div>
 
               {/* Quantity Selection */}
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 mb-6">
                 <div>
-                  <Label className="text-foreground mb-2 block">Quantity</Label>
+                  <Label className="text-foreground mb-2 block text-sm">Quantity</Label>
                   <Input
                     type="number"
                     min={1}
@@ -294,27 +296,27 @@ export default function ProductDetail() {
                 </div>
 
                 <div>
-                  <Label className="text-foreground mb-2 block">Unit Type</Label>
+                  <Label className="text-foreground mb-2 block text-sm">Unit Type</Label>
                   <RadioGroup
                     value={quantityUnit}
                     onValueChange={setQuantityUnit}
-                    className="flex gap-4"
+                    className="flex gap-3"
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="items" id="items" />
-                      <Label htmlFor="items" className="cursor-pointer">
+                      <Label htmlFor="items" className="cursor-pointer text-sm">
                         Items
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="tons" id="tons" />
-                      <Label htmlFor="tons" className="cursor-pointer">
+                      <Label htmlFor="tons" className="cursor-pointer text-sm">
                         Tons
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="kg" id="kg" />
-                      <Label htmlFor="kg" className="cursor-pointer">
+                      <Label htmlFor="kg" className="cursor-pointer text-sm">
                         Kilograms
                       </Label>
                     </div>
@@ -323,17 +325,17 @@ export default function ProductDetail() {
               </div>
 
               {/* Estimated Total */}
-              <div className="card-glass p-4 rounded-xl mb-8">
+              <div className="card-glass p-3 rounded-xl mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Estimated Total:</span>
-                  <span className="text-2xl font-bold text-gradient-gold">
+                  <span className="text-muted-foreground text-sm">Estimated Total:</span>
+                  <span className="text-xl font-bold text-gradient-gold">
                     ${(product.price_per_unit * quantity).toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <Button variant="led" size="lg" className="w-full" onClick={handleAddToCart}>
                   <ShoppingCart className="w-5 h-5 mr-2" />
                   Add to Cart
@@ -363,7 +365,21 @@ export default function ProductDetail() {
                 )}
               </div>
             </div>
+
+            {/* Byproducts Flowchart Section */}
+            <div className="lg:col-span-1">
+              <ByproductsFlowchart 
+                productName={product.product_name} 
+                category={product.category} 
+              />
+            </div>
           </div>
+
+          {/* Related Products Section */}
+          <RelatedProducts 
+            currentProductId={product.id} 
+            category={product.category} 
+          />
         </div>
       </main>
 
