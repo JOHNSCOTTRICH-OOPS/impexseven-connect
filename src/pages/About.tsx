@@ -23,27 +23,31 @@ const highlights = [
 
 export default function About() {
   const [activeView, setActiveView] = useState<"company" | "founder" | null>(null);
-  const [isFlipping, setIsFlipping] = useState<"company" | "founder" | null>(null);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   const handleBoxClick = (view: "company" | "founder") => {
     if (isFlipping) return;
     
     if (activeView === view) {
-      // Flip back
-      setIsFlipping(view);
+      // Click same section again - flip back to normal
+      setIsFlipping(true);
       setTimeout(() => {
         setActiveView(null);
-        setIsFlipping(null);
+        setIsFlipping(false);
       }, 600);
     } else {
-      // Flip to show content
-      setIsFlipping(view);
+      // Click a section - flip the OTHER box and show this section's content
+      setIsFlipping(true);
       setTimeout(() => {
         setActiveView(view);
-        setIsFlipping(null);
+        setIsFlipping(false);
       }, 600);
     }
   };
+
+  // Determine which box should be flipped (the opposite of the clicked/active one)
+  const isCompanyBoxFlipped = activeView === "founder" || (isFlipping && activeView === null);
+  const isFounderBoxFlipped = activeView === "company" || (isFlipping && activeView === null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -84,18 +88,16 @@ export default function About() {
               <div className="flex-1 perspective-1000">
                 <div
                   onClick={() => handleBoxClick("company")}
-                  className={`relative w-full h-full min-h-[500px] cursor-pointer transition-all duration-700 transform-style-preserve-3d ${
-                    isFlipping === "company" || activeView === "company" ? "rotate-y-180" : ""
-                  }`}
+                  className="relative w-full h-full min-h-[500px] cursor-pointer"
                   style={{
                     transformStyle: "preserve-3d",
-                    transform: isFlipping === "company" || activeView === "company" ? "rotateY(180deg)" : "rotateY(0deg)",
+                    transform: activeView === "founder" ? "rotateY(180deg)" : "rotateY(0deg)",
                     transition: "transform 0.6s ease-in-out"
                   }}
                 >
-                  {/* Front Face - Icon and Title */}
+                  {/* Front Face - Company Icon and Title */}
                   <div 
-                    className={`absolute inset-0 rounded-l-2xl p-8 flex flex-col items-center justify-center text-center border-2 backface-hidden ${
+                    className={`absolute inset-0 rounded-l-2xl p-8 flex flex-col items-center justify-center text-center border-2 ${
                       activeView === "company"
                         ? "bg-primary/20 border-primary"
                         : "bg-card/80 border-border hover:border-primary/50 hover:bg-card"
@@ -111,114 +113,16 @@ export default function About() {
                     <p className="text-muted-foreground max-w-xs">
                       Learn about ImpexSeven's mission, values, and global reach
                     </p>
-                  </div>
-
-                  {/* Back Face - Content */}
-                  <div 
-                    className="absolute inset-0 rounded-l-2xl p-6 md:p-8 border-2 border-primary bg-card/95 overflow-y-auto backface-hidden"
-                    style={{ 
-                      backfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)"
-                    }}
-                  >
-                    <h2 className="font-display text-xl md:text-2xl font-bold mb-4">
-                      <span className="text-foreground">Your Trusted </span>
-                      <span className="text-gradient-led">Partner</span>
-                    </h2>
-
-                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
-                      ImpexSeven connects international buyers with premium Indian products 
-                      and helps suppliers bring their products to India's market. We specialize 
-                      in spices, seafood, fruits, and vegetables.
-                    </p>
-
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                      Our mission is to bridge the gap between India's rich agricultural heritage 
-                      and global markets, delivering excellence in every shipment.
-                    </p>
-
-                    {/* Highlights */}
-                    <div className="space-y-3">
-                      {highlights.map((item, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                          <item.icon className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                          <div>
-                            <h3 className="font-semibold text-foreground text-sm">{item.title}</h3>
-                            <p className="text-muted-foreground text-xs">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Founding Date */}
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 border border-primary/30 mt-4">
-                      <Calendar className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Established</p>
-                        <p className="font-display text-sm font-semibold text-foreground">7 August 2025</p>
+                    {activeView === "company" && (
+                      <div className="mt-6 p-4 rounded-xl bg-primary/10 border border-primary/30 animate-fade-in">
+                        <p className="text-sm text-primary font-medium">✓ Currently Viewing</p>
                       </div>
-                    </div>
-
-                    <p className="text-xs text-muted-foreground mt-4 text-center">Click to close</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Center Circle with Arrow */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className={`w-20 h-20 md:w-28 md:h-28 rounded-full bg-background border-4 flex items-center justify-center transition-all duration-500 shadow-2xl ${
-                  activeView === "company" || isFlipping === "company"
-                    ? "border-primary led-glow" 
-                    : activeView === "founder" || isFlipping === "founder"
-                    ? "border-secondary gold-glow"
-                    : "border-border"
-                }`}>
-                  {(activeView === "company" || isFlipping === "company") && (
-                    <ArrowRight className="w-8 h-8 md:w-12 md:h-12 text-primary animate-pulse" />
-                  )}
-                  {(activeView === "founder" || isFlipping === "founder") && (
-                    <ArrowLeft className="w-8 h-8 md:w-12 md:h-12 text-secondary animate-pulse" />
-                  )}
-                  {!activeView && !isFlipping && (
-                    <div className="w-3 h-3 rounded-full bg-muted-foreground/50 animate-pulse" />
-                  )}
-                </div>
-              </div>
-
-              {/* Right Rectangle - About Me */}
-              <div className="flex-1 perspective-1000">
-                <div
-                  onClick={() => handleBoxClick("founder")}
-                  className="relative w-full h-full min-h-[500px] cursor-pointer"
-                  style={{
-                    transformStyle: "preserve-3d",
-                    transform: isFlipping === "founder" || activeView === "founder" ? "rotateY(-180deg)" : "rotateY(0deg)",
-                    transition: "transform 0.6s ease-in-out"
-                  }}
-                >
-                  {/* Front Face - Icon and Title */}
-                  <div 
-                    className={`absolute inset-0 rounded-r-2xl p-8 flex flex-col items-center justify-center text-center border-2 ${
-                      activeView === "founder"
-                        ? "bg-secondary/20 border-secondary"
-                        : "bg-card/80 border-border hover:border-secondary/50 hover:bg-card"
-                    }`}
-                    style={{ backfaceVisibility: "hidden" }}
-                  >
-                    <div className="p-6 rounded-2xl mb-6 bg-secondary/10">
-                      <User className="w-16 h-16 text-secondary/70" />
-                    </div>
-                    <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 text-foreground">
-                      About Me
-                    </h2>
-                    <p className="text-muted-foreground max-w-xs">
-                      Meet the founder and the vision behind ImpexSeven
-                    </p>
+                    )}
                   </div>
 
-                  {/* Back Face - Content */}
+                  {/* Back Face - Founder Content (shown when founder is clicked) */}
                   <div 
-                    className="absolute inset-0 rounded-r-2xl p-6 md:p-8 border-2 border-secondary bg-card/95 overflow-y-auto"
+                    className="absolute inset-0 rounded-l-2xl p-6 md:p-8 border-2 border-secondary bg-card/95 overflow-y-auto"
                     style={{ 
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)"
@@ -267,12 +171,121 @@ export default function About() {
                         impexsevenindia@gmail.com
                       </p>
                     </div>
+                  </div>
+                </div>
+              </div>
 
-                    <p className="text-xs text-muted-foreground mt-4 text-center">Click to close</p>
+              {/* Center Circle with Arrow */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                <div className={`w-20 h-20 md:w-28 md:h-28 rounded-full bg-background border-4 flex items-center justify-center transition-all duration-500 shadow-2xl ${
+                  activeView === "company"
+                    ? "border-primary led-glow" 
+                    : activeView === "founder"
+                    ? "border-secondary gold-glow"
+                    : "border-border"
+                }`}>
+                  {activeView === "company" && (
+                    <ArrowLeft className="w-8 h-8 md:w-12 md:h-12 text-primary animate-pulse" />
+                  )}
+                  {activeView === "founder" && (
+                    <ArrowRight className="w-8 h-8 md:w-12 md:h-12 text-secondary animate-pulse" />
+                  )}
+                  {!activeView && (
+                    <div className="w-3 h-3 rounded-full bg-muted-foreground/50 animate-pulse" />
+                  )}
+                </div>
+              </div>
+
+              {/* Right Rectangle - About Me */}
+              <div className="flex-1 perspective-1000">
+                <div
+                  onClick={() => handleBoxClick("founder")}
+                  className="relative w-full h-full min-h-[500px] cursor-pointer"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    transform: activeView === "company" ? "rotateY(-180deg)" : "rotateY(0deg)",
+                    transition: "transform 0.6s ease-in-out"
+                  }}
+                >
+                  {/* Front Face - Founder Icon and Title */}
+                  <div 
+                    className={`absolute inset-0 rounded-r-2xl p-8 flex flex-col items-center justify-center text-center border-2 ${
+                      activeView === "founder"
+                        ? "bg-secondary/20 border-secondary"
+                        : "bg-card/80 border-border hover:border-secondary/50 hover:bg-card"
+                    }`}
+                    style={{ backfaceVisibility: "hidden" }}
+                  >
+                    <div className="p-6 rounded-2xl mb-6 bg-secondary/10">
+                      <User className="w-16 h-16 text-secondary/70" />
+                    </div>
+                    <h2 className="font-display text-2xl md:text-3xl font-bold mb-3 text-foreground">
+                      About Me
+                    </h2>
+                    <p className="text-muted-foreground max-w-xs">
+                      Meet the founder and the vision behind ImpexSeven
+                    </p>
+                    {activeView === "founder" && (
+                      <div className="mt-6 p-4 rounded-xl bg-secondary/10 border border-secondary/30 animate-fade-in">
+                        <p className="text-sm text-secondary font-medium">✓ Currently Viewing</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Back Face - Company Content (shown when company is clicked) */}
+                  <div 
+                    className="absolute inset-0 rounded-r-2xl p-6 md:p-8 border-2 border-primary bg-card/95 overflow-y-auto"
+                    style={{ 
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)"
+                    }}
+                  >
+                    <h2 className="font-display text-xl md:text-2xl font-bold mb-4">
+                      <span className="text-foreground">Your Trusted </span>
+                      <span className="text-gradient-led">Partner</span>
+                    </h2>
+
+                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-4">
+                      ImpexSeven connects international buyers with premium Indian products 
+                      and helps suppliers bring their products to India's market. We specialize 
+                      in spices, seafood, fruits, and vegetables.
+                    </p>
+
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">
+                      Our mission is to bridge the gap between India's rich agricultural heritage 
+                      and global markets, delivering excellence in every shipment.
+                    </p>
+
+                    {/* Highlights */}
+                    <div className="space-y-3">
+                      {highlights.map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                          <item.icon className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h3 className="font-semibold text-foreground text-sm">{item.title}</h3>
+                            <p className="text-muted-foreground text-xs">{item.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Founding Date */}
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 border border-primary/30 mt-4">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Established</p>
+                        <p className="font-display text-sm font-semibold text-foreground">7 August 2025</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Instructions */}
+            <p className="text-center text-muted-foreground text-sm mt-8">
+              {activeView ? "Click the highlighted section again to go back" : "Click on either section to explore"}
+            </p>
           </div>
         </div>
       </main>
