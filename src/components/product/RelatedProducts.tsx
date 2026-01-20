@@ -31,7 +31,7 @@ const categoryImages: Record<string, string> = {
   "Other": "/placeholder.svg",
 };
 
-export default function RelatedProducts({ currentProductId, category }: RelatedProductsProps) {
+const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,16 +59,17 @@ export default function RelatedProducts({ currentProductId, category }: RelatedP
 
       // If we didn't get enough products from the same category, fetch more
       if (data && data.length < 4) {
+        const existingIds = data.map(p => p.id);
         const { data: moreProducts, error: moreError } = await supabase
           .from("seller_products")
           .select("id, product_name, location, photo_url, price_per_unit, verified, category")
           .neq("id", currentProductId)
           .eq("status", "active")
-          .not("id", "in", `(${data.map(p => p.id).join(",")})`)
           .limit(4 - data.length);
 
         if (!moreError && moreProducts) {
-          setProducts([...data, ...moreProducts]);
+          const filteredMore = moreProducts.filter(p => !existingIds.includes(p.id));
+          setProducts([...data, ...filteredMore]);
         } else {
           setProducts(data || []);
         }
@@ -114,9 +115,10 @@ export default function RelatedProducts({ currentProductId, category }: RelatedP
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {products.map((product) => (
-          <div
+          <Link
             key={product.id}
-            className="group card-glass rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1"
+            to={`/product/${product.id}`}
+            className="group card-glass rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 block"
           >
             {/* Image */}
             <div className="relative h-36 md:h-44 overflow-hidden">
@@ -129,14 +131,14 @@ export default function RelatedProducts({ currentProductId, category }: RelatedP
               {/* Verification Badge */}
               <div className="absolute top-2 right-2">
                 {product.verified ? (
-                  <Badge className="bg-green-500/90 text-white border-0 flex items-center gap-1 text-xs px-2 py-0.5">
+                  <Badge className="bg-green-500/90 text-primary-foreground border-0 flex items-center gap-1 text-xs px-2 py-0.5">
                     <CheckCircle className="w-3 h-3" />
                     Verified
                   </Badge>
                 ) : (
                   <Badge
                     variant="outline"
-                    className="bg-yellow-500/90 text-black border-0 flex items-center gap-1 text-xs px-2 py-0.5"
+                    className="bg-accent text-accent-foreground border-0 flex items-center gap-1 text-xs px-2 py-0.5"
                   >
                     <AlertTriangle className="w-3 h-3" />
                     Unverified
@@ -165,17 +167,17 @@ export default function RelatedProducts({ currentProductId, category }: RelatedP
                 <span className="font-bold text-primary text-sm md:text-base">
                   ${product.price_per_unit.toFixed(2)}
                 </span>
-                <Link to={`/product/${product.id}`}>
-                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary">
-                    <Eye className="w-3 h-3 mr-1" />
-                    View
-                  </Button>
-                </Link>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary">
+                  <Eye className="w-3 h-3 mr-1" />
+                  View
+                </Button>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default RelatedProducts;
