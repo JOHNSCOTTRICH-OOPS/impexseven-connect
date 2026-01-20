@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ArrowRight, ArrowDown, Leaf, Package, Recycle } from "lucide-react";
+import { ArrowDown, Leaf, Package, Recycle } from "lucide-react";
 
 interface ByproductsFlowchartProps {
   productName: string;
@@ -19,7 +19,7 @@ const categoryByproducts: Record<string, string[]> = {
   "Other": ["Organic Waste", "Compost", "Bio-Energy", "Recycled Materials"],
 };
 
-export default function ByproductsFlowchart({ productName, category }: ByproductsFlowchartProps) {
+const ByproductsFlowchart = ({ productName, category }: ByproductsFlowchartProps) => {
   const byproducts = useMemo(() => {
     return categoryByproducts[category || "Other"] || categoryByproducts["Other"];
   }, [category]);
@@ -33,9 +33,10 @@ export default function ByproductsFlowchart({ productName, category }: Byproduct
 
       <div className="flex flex-col items-center">
         {/* Main Product Node */}
-        <div className="relative">
-          <div className="bg-primary/20 border-2 border-primary rounded-xl px-6 py-4 text-center min-w-[160px] shadow-lg shadow-primary/20">
-            <Package className="w-6 h-6 mx-auto mb-2 text-primary" />
+        <div className="relative group">
+          <div className="absolute inset-0 bg-primary/30 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+          <div className="relative bg-primary/20 border-2 border-primary rounded-xl px-6 py-4 text-center min-w-[160px] shadow-lg shadow-primary/20 transition-all duration-300 group-hover:scale-105 group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/40">
+            <Package className="w-6 h-6 mx-auto mb-2 text-primary transition-transform duration-300 group-hover:scale-110" />
             <span className="font-semibold text-foreground text-sm leading-tight block">
               {productName}
             </span>
@@ -44,17 +45,20 @@ export default function ByproductsFlowchart({ productName, category }: Byproduct
 
         {/* Arrow Down */}
         <div className="my-3">
-          <ArrowDown className="w-6 h-6 text-primary animate-pulse" />
+          <ArrowDown className="w-6 h-6 text-primary animate-bounce" />
         </div>
 
         {/* Processing Node */}
-        <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 rounded-lg px-4 py-2 text-center">
-          <span className="text-sm text-muted-foreground">Processing & Extraction</span>
+        <div className="group relative">
+          <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
+          <div className="relative bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 rounded-lg px-4 py-2 text-center transition-all duration-300 group-hover:border-primary/60 group-hover:scale-105">
+            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">Processing & Extraction</span>
+          </div>
         </div>
 
         {/* Arrow Down */}
         <div className="my-3">
-          <ArrowDown className="w-6 h-6 text-primary animate-pulse" />
+          <ArrowDown className="w-6 h-6 text-primary animate-bounce" style={{ animationDelay: "0.1s" }} />
         </div>
 
         {/* Byproducts Grid */}
@@ -62,15 +66,19 @@ export default function ByproductsFlowchart({ productName, category }: Byproduct
           {byproducts.map((byproduct, index) => (
             <div
               key={index}
-              className="relative group"
+              className="relative group cursor-pointer"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Connection line */}
-              <div className="absolute -top-3 left-1/2 w-px h-3 bg-primary/30" />
+              <div className="absolute -top-3 left-1/2 w-px h-3 bg-primary/30 group-hover:bg-primary transition-colors duration-300" />
+              
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
               
               {/* Byproduct Node */}
-              <div className="bg-muted/50 border border-border hover:border-primary/50 rounded-lg px-3 py-3 text-center transition-all duration-300 hover:bg-primary/10 hover:shadow-md hover:shadow-primary/10">
-                <Leaf className="w-4 h-4 mx-auto mb-1.5 text-primary/70 group-hover:text-primary transition-colors" />
-                <span className="text-xs font-medium text-foreground block leading-tight">
+              <div className="relative bg-muted/50 border border-border rounded-lg px-3 py-3 text-center transition-all duration-300 group-hover:border-primary group-hover:bg-primary/10 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-105 group-hover:-translate-y-1">
+                <Leaf className="w-4 h-4 mx-auto mb-1.5 text-primary/70 transition-all duration-300 group-hover:text-primary group-hover:scale-110 group-hover:animate-pulse" />
+                <span className="text-xs font-medium text-foreground block leading-tight transition-colors duration-300 group-hover:text-primary">
                   {byproduct}
                 </span>
               </div>
@@ -85,4 +93,6 @@ export default function ByproductsFlowchart({ productName, category }: Byproduct
       </div>
     </div>
   );
-}
+};
+
+export default ByproductsFlowchart;
