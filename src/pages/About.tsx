@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Calendar, Globe2, Shield, TrendingUp, User, Building2, ArrowLeft, ArrowRight } from "lucide-react";
+import { Calendar, Globe2, Shield, TrendingUp, User, Building2, ArrowLeft, ArrowRight, Upload, Loader2 } from "lucide-react";
+import { useAboutImages } from "@/hooks/useAboutImages";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import founderPhotoDefault from "@/assets/founder-photo.jpg";
 
 const highlights = [
   {
@@ -24,19 +29,23 @@ const highlights = [
 export default function About() {
   const [activeView, setActiveView] = useState<"company" | "founder" | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
+  const { companyPhotoUrl, founderPhotoUrl, refetch } = useAboutImages();
+  const { isAdmin } = useIsAdmin();
+  const [uploadingCompany, setUploadingCompany] = useState(false);
+  const [uploadingFounder, setUploadingFounder] = useState(false);
+  const companyInputRef = useRef<HTMLInputElement>(null);
+  const founderInputRef = useRef<HTMLInputElement>(null);
 
   const handleBoxClick = (view: "company" | "founder") => {
     if (isFlipping) return;
     
     if (activeView === view) {
-      // Click same section again - flip back to normal
       setIsFlipping(true);
       setTimeout(() => {
         setActiveView(null);
         setIsFlipping(false);
       }, 600);
     } else {
-      // Click a section - flip the OTHER box and show this section's content
       setIsFlipping(true);
       setTimeout(() => {
         setActiveView(view);
@@ -45,13 +54,86 @@ export default function About() {
     }
   };
 
-  // Determine which box should be flipped (the opposite of the clicked/active one)
-  const isCompanyBoxFlipped = activeView === "founder" || (isFlipping && activeView === null);
-  const isFounderBoxFlipped = activeView === "company" || (isFlipping && activeView === null);
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "company" | "founder"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    if (type === "company") setUploadingCompany(true);
+    else setUploadingFounder(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${type}-photo.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("about-images")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("about-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from("about_settings")
+        .update({ 
+          setting_value: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq("setting_key", `${type}_photo_url`);
+
+      if (updateError) throw updateError;
+
+      await refetch();
+      toast.success(`${type === "company" ? "Company" : "Founder"} photo updated!`);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(error.message || "Failed to upload image");
+    } finally {
+      if (type === "company") setUploadingCompany(false);
+      else setUploadingFounder(false);
+    }
+  };
+
+  // Use uploaded images or fallbacks
+  const displayFounderPhoto = founderPhotoUrl || founderPhotoDefault;
+  const displayCompanyPhoto = companyPhotoUrl || null;
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
+
+      {/* Hidden file inputs */}
+      <input
+        ref={companyInputRef}
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleImageUpload(e, "company")}
+        className="hidden"
+      />
+      <input
+        ref={founderInputRef}
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleImageUpload(e, "founder")}
+        className="hidden"
+      />
 
       <main className="pt-24 pb-16 relative overflow-hidden">
         {/* Background decorative elements */}
@@ -128,17 +210,18 @@ export default function About() {
                       transform: "rotateY(180deg)"
                     }}
                   >
-                  {/* Founder Photo */}
+                    {/* Founder Photo */}
                     <div className="flex justify-center mb-6">
-                      <div className="relative">
-                        <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-secondary/30 to-primary/20 flex items-center justify-center border-2 border-secondary/50 overflow-hidden">
+                      <div className="relative group">
+                        <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-secondary/30 to-primary/20 flex items-center justify-center border-2 border-secondary/50 overflow-hidden">
                           <img 
-                            src="/founder-photo.jpg" 
+                            src={displayFounderPhoto}
                             alt="Founder" 
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
-                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              const fallback = e.currentTarget.nextElementSibling;
+                              if (fallback) fallback.classList.remove('hidden');
                             }}
                           />
                           <User className="w-12 h-12 text-secondary/70 hidden" />
@@ -148,6 +231,23 @@ export default function About() {
                             Founder & CEO
                           </div>
                         </div>
+                        {/* Upload button for admin */}
+                        {isAdmin && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              founderInputRef.current?.click();
+                            }}
+                            disabled={uploadingFounder}
+                            className="absolute top-0 right-0 p-2 rounded-full bg-background/90 border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                          >
+                            {uploadingFounder ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                            ) : (
+                              <Upload className="w-4 h-4 text-primary" />
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -251,17 +351,39 @@ export default function About() {
                   >
                     {/* Company Photo */}
                     <div className="flex justify-center mb-4">
-                      <div className="w-full h-24 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/30 overflow-hidden">
-                        <img 
-                          src="/company-photo.jpg" 
-                          alt="ImpexSeven Company" 
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                        <Building2 className="w-10 h-10 text-primary/50 hidden" />
+                      <div className="relative group w-full">
+                        <div className="w-full h-28 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/30 overflow-hidden">
+                          {displayCompanyPhoto ? (
+                            <img 
+                              src={displayCompanyPhoto}
+                              alt="ImpexSeven Company" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling;
+                                if (fallback) fallback.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <Building2 className={`w-10 h-10 text-primary/50 ${displayCompanyPhoto ? 'hidden' : ''}`} />
+                        </div>
+                        {/* Upload button for admin */}
+                        {isAdmin && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              companyInputRef.current?.click();
+                            }}
+                            disabled={uploadingCompany}
+                            className="absolute top-2 right-2 p-2 rounded-full bg-background/90 border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                          >
+                            {uploadingCompany ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                            ) : (
+                              <Upload className="w-4 h-4 text-primary" />
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                     
