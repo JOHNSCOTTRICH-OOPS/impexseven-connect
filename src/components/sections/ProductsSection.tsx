@@ -123,9 +123,10 @@ const ProductsSection = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product) => (
-              <div
+              <Link 
                 key={product.id}
-                className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500"
+                to={`/product/${product.id}`}
+                className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 block"
               >
                 {/* Image */}
                 <div className="relative h-56 overflow-hidden">
@@ -168,21 +169,27 @@ const ProductsSection = () => {
 
                   {/* Actions */}
                   <div className="flex gap-3">
-                    <Link to={`/product/${product.id}`} className="flex-1">
-                      <Button variant="ledOutline" size="sm" className="w-full">
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </Button>
-                    </Link>
-                    <Link to={`/product/${product.id}`} className="flex-1">
-                      <Button variant="led" size="sm" className="w-full">
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
-                      </Button>
-                    </Link>
+                    <Button variant="ledOutline" size="sm" className="flex-1">
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                    <Button 
+                      variant="led" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Navigate to product page for add to cart
+                        window.location.href = `/product/${product.id}`;
+                      }}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add to Cart
+                    </Button>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

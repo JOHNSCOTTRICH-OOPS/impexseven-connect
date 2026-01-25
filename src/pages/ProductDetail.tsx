@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Calendar,
   Package,
+  Info,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
@@ -22,8 +23,12 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
-import ByproductsFlowchart from "@/components/product/ByproductsFlowchart";
+import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
 import RelatedProducts from "@/components/product/RelatedProducts";
+import IncotermsSelector from "@/components/product/IncotermsSelector";
+import AdminProductEditModal from "@/components/product/AdminProductEditModal";
+
+const ADMIN_EMAIL = "njohnscottrich@gmail.com";
 
 interface Product {
   id: string;
@@ -50,6 +55,13 @@ export default function ProductDetail() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  
+  // Incoterms state
+  const [incoterm, setIncoterm] = useState("exw");
+  const [portLocation, setPortLocation] = useState("");
+  const [destinationCountry, setDestinationCountry] = useState("");
+  
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -63,19 +75,11 @@ export default function ProductDetail() {
   // Check admin status when user changes
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (!user) {
+      if (!user?.email) {
         setIsAdmin(false);
         return;
       }
-      
-      try {
-        const { data, error } = await supabase.rpc('is_admin');
-        if (error) throw error;
-        setIsAdmin(data === true);
-      } catch (error) {
-        console.error("Error checking admin status:", error);
-        setIsAdmin(false);
-      }
+      setIsAdmin(user.email === ADMIN_EMAIL);
     };
 
     checkAdminStatus();
@@ -103,6 +107,26 @@ export default function ProductDetail() {
       setShowAuthModal(true);
       return;
     }
+    
+    // Validate incoterm requirements
+    if (incoterm === "fob" && !portLocation.trim()) {
+      toast({
+        title: "Port location required",
+        description: "Please enter the destination port location for FOB delivery.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (incoterm === "cif" && !destinationCountry.trim()) {
+      toast({
+        title: "Destination country required",
+        description: "Please enter the destination country for CIF delivery.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (product) {
       addToCart(product.id, quantity, quantityUnit);
     }
@@ -208,14 +232,14 @@ export default function ProductDetail() {
               {/* Verification Badge */}
               <div className="absolute top-4 right-4">
                 {product.verified ? (
-                  <Badge className="bg-green-500/90 text-white border-0 flex items-center gap-1 text-sm px-3 py-1">
+                  <Badge className="bg-primary/90 text-primary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1">
                     <CheckCircle className="w-4 h-4" />
                     Verified
                   </Badge>
                 ) : (
                   <Badge
                     variant="outline"
-                    className="bg-yellow-500/90 text-black border-0 flex items-center gap-1 text-sm px-3 py-1"
+                    className="bg-secondary/90 text-secondary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1"
                   >
                     <AlertTriangle className="w-4 h-4" />
                     Unverified
@@ -227,6 +251,16 @@ export default function ProductDetail() {
               <Badge className="absolute top-4 left-4 bg-primary/80">
                 {product.category || "Other"}
               </Badge>
+
+              {/* Price Disclaimer */}
+              <div className="mt-4 p-3 rounded-xl bg-muted/50 border border-border">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground">Price Disclaimer:</span> The displayed price is indicative and may vary. The final price will be confirmed when you receive the official invoice.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Details Section */}
@@ -273,7 +307,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Quantity Selection */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 mb-4">
                 <div>
                   <Label className="text-foreground mb-2 block text-sm">Quantity</Label>
                   <Input
@@ -324,6 +358,16 @@ export default function ProductDetail() {
                 </div>
               </div>
 
+              {/* Incoterms Selection */}
+              <IncotermsSelector
+                value={incoterm}
+                onChange={setIncoterm}
+                portLocation={portLocation}
+                onPortLocationChange={setPortLocation}
+                destinationCountry={destinationCountry}
+                onDestinationCountryChange={setDestinationCountry}
+              />
+
               {/* Estimated Total */}
               <div className="card-glass p-3 rounded-xl mb-6">
                 <div className="flex justify-between items-center">
@@ -368,9 +412,11 @@ export default function ProductDetail() {
 
             {/* Byproducts Flowchart Section */}
             <div className="lg:col-span-1">
-              <ByproductsFlowchart 
+              <EditableByproductsFlowchart 
                 productName={product.product_name} 
-                category={product.category} 
+                category={product.category}
+                productId={product.id}
+                onProductEdit={() => setShowEditModal(true)}
               />
             </div>
           </div>
@@ -385,6 +431,14 @@ export default function ProductDetail() {
 
       <Footer />
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      
+      {/* Admin Edit Modal */}
+      <AdminProductEditModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        product={product}
+        onProductUpdated={fetchProduct}
+      />
     </div>
   );
 }
