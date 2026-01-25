@@ -128,11 +128,20 @@ export default function About() {
                       transform: "rotateY(180deg)"
                     }}
                   >
-                    {/* Founder Avatar */}
+                  {/* Founder Photo */}
                     <div className="flex justify-center mb-6">
                       <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-secondary/30 to-primary/20 flex items-center justify-center border-2 border-secondary/50">
-                          <User className="w-12 h-12 text-secondary/70" />
+                        <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-secondary/30 to-primary/20 flex items-center justify-center border-2 border-secondary/50 overflow-hidden">
+                          <img 
+                            src="/founder-photo.jpg" 
+                            alt="Founder" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <User className="w-12 h-12 text-secondary/70 hidden" />
                         </div>
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
                           <div className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground font-medium text-xs">
@@ -240,6 +249,22 @@ export default function About() {
                       transform: "rotateY(180deg)"
                     }}
                   >
+                    {/* Company Photo */}
+                    <div className="flex justify-center mb-4">
+                      <div className="w-full h-24 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/30 overflow-hidden">
+                        <img 
+                          src="/company-photo.jpg" 
+                          alt="ImpexSeven Company" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <Building2 className="w-10 h-10 text-primary/50 hidden" />
+                      </div>
+                    </div>
+                    
                     <h2 className="font-display text-xl md:text-2xl font-bold mb-4">
                       <span className="text-foreground">Your Trusted </span>
                       <span className="text-gradient-led">Partner</span>
