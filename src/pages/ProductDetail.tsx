@@ -252,15 +252,6 @@ export default function ProductDetail() {
                 {product.category || "Other"}
               </Badge>
 
-              {/* Price Disclaimer */}
-              <div className="mt-4 p-3 rounded-xl bg-muted/50 border border-border">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-medium text-foreground">Price Disclaimer:</span> The displayed price is indicative and may vary. The final price will be confirmed when you receive the official invoice.
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Details Section */}
@@ -308,53 +299,38 @@ export default function ProductDetail() {
 
               {/* Quantity Selection */}
               <div className="space-y-3 mb-4">
-                <div>
-                  <Label className="text-foreground mb-2 block text-sm">Quantity</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={quantity}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === '') {
-                        setQuantity(0);
-                      } else {
-                        setQuantity(parseInt(val) || 0);
-                      }
-                    }}
-                    onBlur={() => {
-                      if (quantity < 1) setQuantity(1);
-                    }}
-                    className="bg-muted/50 border-border"
-                  />
+                <div className="flex items-end gap-3">
+                  <div className="flex-1">
+                    <Label className="text-foreground mb-2 block text-sm">Quantity (Tons)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={quantity}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '') {
+                          setQuantity(0);
+                        } else {
+                          setQuantity(parseInt(val) || 0);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (quantity < 1) setQuantity(1);
+                      }}
+                      className="bg-muted/50 border-border"
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground pb-2.5 font-medium">Tons</span>
                 </div>
+              </div>
 
-                <div>
-                  <Label className="text-foreground mb-2 block text-sm">Unit Type</Label>
-                  <RadioGroup
-                    value={quantityUnit}
-                    onValueChange={setQuantityUnit}
-                    className="flex gap-3"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="items" id="items" />
-                      <Label htmlFor="items" className="cursor-pointer text-sm">
-                        Items
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="tons" id="tons" />
-                      <Label htmlFor="tons" className="cursor-pointer text-sm">
-                        Tons
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="kg" id="kg" />
-                      <Label htmlFor="kg" className="cursor-pointer text-sm">
-                        Kilograms
-                      </Label>
-                    </div>
-                  </RadioGroup>
+              {/* Price Disclaimer */}
+              <div className="p-3 rounded-xl bg-muted/50 border border-border mb-4">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground">Price Disclaimer:</span> The displayed price is indicative and may vary. The final price will be confirmed when you receive the official invoice.
+                  </p>
                 </div>
               </div>
 

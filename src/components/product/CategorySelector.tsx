@@ -62,9 +62,13 @@ const CategorySelector = ({ productId, currentCategory, onCategoryChanged }: Cat
         <SelectTrigger className="h-8 text-xs flex-1">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-background border-border">
           {categories.map((cat) => (
-            <SelectItem key={cat} value={cat} className="text-sm">
+            <SelectItem 
+              key={cat} 
+              value={cat} 
+              className={`text-sm ${cat === "Other" ? "text-primary font-medium" : ""}`}
+            >
               {cat}
             </SelectItem>
           ))}
