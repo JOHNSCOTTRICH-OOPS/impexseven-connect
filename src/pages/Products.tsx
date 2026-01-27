@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import CategorySelector from "@/components/product/CategorySelector";
 
 interface Product {
   id: string;
@@ -147,6 +148,12 @@ export default function Products() {
     addToCart(productId);
   };
 
+  const handleCategoryChange = (productId: string, newCategory: string) => {
+    setProducts(prev =>
+      prev.map(p => p.id === productId ? { ...p, category: newCategory } : p)
+    );
+  };
+
   const renderProductCard = (product: Product, showAdminActions: boolean = false) => (
     <div
       key={product.id}
@@ -227,7 +234,14 @@ export default function Products() {
 
         {/* Actions */}
         {showAdminActions && isAdmin ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
+            {/* Category Selector for Admin */}
+            <CategorySelector
+              productId={product.id}
+              currentCategory={product.category}
+              onCategoryChanged={(newCategory) => handleCategoryChange(product.id, newCategory)}
+            />
+            
             {product.status === 'pending' && (
               <div className="flex gap-2">
                 <Button
