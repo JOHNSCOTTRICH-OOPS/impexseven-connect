@@ -76,6 +76,56 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          items: Json
+          notes: string | null
+          quote_request_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          items: Json
+          notes?: string | null
+          quote_request_id?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          quote_request_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: false
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -275,6 +325,10 @@ export type Database = {
       toggle_product_verification: {
         Args: { _product_id: string }
         Returns: boolean
+      }
+      update_order_status: {
+        Args: { _order_id: string; _status: string }
+        Returns: string
       }
       update_product_status: {
         Args: { _product_id: string; _status: string }

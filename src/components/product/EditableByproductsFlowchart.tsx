@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowDown, Leaf, Package, Recycle, Edit2, Check, X } from "lucide-react";
+import { ArrowDown, Leaf, Package, Layers, Edit2, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,17 +12,17 @@ interface EditableByproductsFlowchartProps {
   onProductEdit?: () => void;
 }
 
-// Define byproducts based on category
-const categoryByproducts: Record<string, string[]> = {
-  "Fresh Produce": ["Compost", "Animal Feed", "Bio-Fuel", "Fertilizer"],
-  "Spices": ["Essential Oils", "Natural Dyes", "Herbal Tea", "Aromatherapy"],
-  "Seafood": ["Fish Meal", "Fish Oil", "Bone Meal", "Pet Food"],
-  "Fruits": ["Juice Extract", "Fruit Pulp", "Pectin", "Bio-Ethanol"],
-  "Vegetables": ["Vegetable Oil", "Fiber Extract", "Compost", "Animal Feed"],
-  "Grains": ["Bran", "Straw", "Bio-Fuel", "Animal Feed"],
-  "Dairy": ["Whey Protein", "Lactose", "Casein", "Bio-Gas"],
-  "Meat": ["Bone Meal", "Gelatin", "Tallow", "Pet Food"],
-  "Other": ["Organic Waste", "Compost", "Bio-Energy", "Recycled Materials"],
+// Define product variants based on category
+const categoryProductVariants: Record<string, string[]> = {
+  "Fresh Produce": ["Whole", "Sliced", "Diced", "Frozen"],
+  "Spices": ["Whole", "Ground Powder", "Flakes", "Oil Extract"],
+  "Seafood": ["Fresh Whole", "Filleted", "Frozen", "Dried"],
+  "Fruits": ["Fresh Whole", "Sliced", "Dried", "Juice/Pulp"],
+  "Vegetables": ["Fresh Whole", "Chopped", "Frozen", "Dehydrated"],
+  "Grains": ["Whole Grain", "Flour", "Flakes", "Bran"],
+  "Dairy": ["Fresh", "Processed", "Powdered", "Cultured"],
+  "Meat": ["Fresh Cuts", "Minced", "Frozen", "Cured"],
+  "Other": ["Standard", "Processed", "Custom", "Bulk"],
 };
 
 const ADMIN_EMAIL = "njohnscottrich@gmail.com";
@@ -39,8 +39,8 @@ const EditableByproductsFlowchart = ({
   const [customByproducts, setCustomByproducts] = useState<string[]>([]);
   const [editValue, setEditValue] = useState("");
 
-  const defaultByproducts = useMemo(() => {
-    return categoryByproducts[category || "Other"] || categoryByproducts["Other"];
+  const defaultVariants = useMemo(() => {
+    return categoryProductVariants[category || "Other"] || categoryProductVariants["Other"];
   }, [category]);
 
   useEffect(() => {
@@ -55,8 +55,8 @@ const EditableByproductsFlowchart = ({
   }, [user]);
 
   useEffect(() => {
-    setCustomByproducts(defaultByproducts);
-  }, [defaultByproducts]);
+    setCustomByproducts(defaultVariants);
+  }, [defaultVariants]);
 
   const handleEditStart = (index: number) => {
     if (!isAdmin) return;
@@ -88,8 +88,8 @@ const EditableByproductsFlowchart = ({
   return (
     <div className="card-glass p-6 rounded-2xl">
       <h3 className="font-display text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-        <Recycle className="w-5 h-5 text-primary" />
-        Byproducts Flowchart
+        <Layers className="w-5 h-5 text-primary" />
+        Available Product Forms
         {isAdmin && (
           <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-full ml-auto">
             Admin Mode
@@ -126,16 +126,15 @@ const EditableByproductsFlowchart = ({
         <div className="group relative">
           <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
           <div className="relative bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 rounded-lg px-4 py-2 text-center transition-all duration-300 group-hover:border-primary/60 group-hover:scale-105">
-            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">Processing & Extraction</span>
+            <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">Available Forms</span>
           </div>
         </div>
 
-        {/* Arrow Down */}
         <div className="my-3">
           <ArrowDown className="w-6 h-6 text-primary animate-bounce" style={{ animationDelay: "0.1s" }} />
         </div>
 
-        {/* Byproducts Grid */}
+        {/* Product Variants Grid */}
         <div className="grid grid-cols-2 gap-3 w-full">
           {customByproducts.map((byproduct, index) => (
             <div
@@ -197,7 +196,7 @@ const EditableByproductsFlowchart = ({
 
         {/* Info text */}
         <p className="text-xs text-muted-foreground text-center mt-4 px-2">
-          Sustainable byproducts derived from {productName.toLowerCase()} processing
+          Select your preferred form of {productName.toLowerCase()} when ordering
         </p>
       </div>
     </div>

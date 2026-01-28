@@ -228,7 +228,7 @@ export default function About() {
                         </div>
                         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
                           <div className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground font-medium text-xs">
-                            Founder & CEO
+                            Founder
                           </div>
                         </div>
                         {/* Upload button for admin */}
@@ -260,15 +260,11 @@ export default function About() {
                     </p>
 
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                      With a passion for connecting India's finest products to the world, 
-                      I founded ImpexSeven to bridge the gap between quality Indian suppliers 
-                      and global buyers seeking authentic, premium products.
+                      Myself JSR, I am the head of IMPEXSEVEN. ImpexSeven deals with exports of different kinds of goods from India and helps to find the best products for the buyers.
                     </p>
 
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                      My vision is to make international trade accessible, transparent, and 
-                      beneficial for all parties involved. Through ImpexSeven, we're building 
-                      lasting partnerships that drive mutual growth and success.
+                      My company examines every step while exporting your products from India to global ranges and delivering the best of its kind. We deal with incoterms through our website. We build trust, not emotions. IMPEXSEVEN.
                     </p>
 
                     {/* Contact */}

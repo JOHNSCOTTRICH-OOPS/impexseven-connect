@@ -155,12 +155,13 @@ export default function Products() {
   };
 
   const renderProductCard = (product: Product, showAdminActions: boolean = false) => (
-    <div
+    <Link
       key={product.id}
-      className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500"
+      to={`/product/${product.id}`}
+      className="group card-glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-500 block"
     >
       {/* Image */}
-      <Link to={`/product/${product.id}`} className="block relative h-56 overflow-hidden">
+      <div className="relative h-56 overflow-hidden">
         {product.photo_url ? (
           <img
             src={product.photo_url}
@@ -199,19 +200,17 @@ export default function Products() {
           )}
         </div>
 
-        {/* Category Badge */}
-        <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-amber-500 text-black text-xs font-bold uppercase tracking-wider shadow-lg">
+        {/* Category Badge - Red */}
+        <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-bold uppercase tracking-wider shadow-lg">
           {product.category || "Other"}
         </span>
-      </Link>
+      </div>
 
       {/* Content */}
       <div className="p-6">
-        <Link to={`/product/${product.id}`}>
-          <h3 className="font-display text-xl font-semibold text-foreground mb-2 hover:text-primary transition-colors">
-            {product.product_name}
-          </h3>
-        </Link>
+        <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+          {product.product_name}
+        </h3>
         
         {/* Location */}
         <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
@@ -234,7 +233,7 @@ export default function Products() {
 
         {/* Actions */}
         {showAdminActions && isAdmin ? (
-          <div className="space-y-3">
+          <div className="space-y-3" onClick={(e) => e.preventDefault()}>
             {/* Category Selector for Admin */}
             <CategorySelector
               productId={product.id}
@@ -248,7 +247,10 @@ export default function Products() {
                   variant="led"
                   size="sm"
                   className="flex-1"
-                  onClick={() => updateProductStatus(product.id, 'active')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateProductStatus(product.id, 'active');
+                  }}
                   disabled={actionLoading === product.id}
                 >
                   <CheckSquare className="w-4 h-4 mr-1" />
@@ -258,7 +260,10 @@ export default function Products() {
                   variant="outline"
                   size="sm"
                   className="flex-1"
-                  onClick={() => updateProductStatus(product.id, 'archived')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateProductStatus(product.id, 'archived');
+                  }}
                   disabled={actionLoading === product.id}
                 >
                   <Archive className="w-4 h-4 mr-1" />
@@ -271,7 +276,10 @@ export default function Products() {
                 variant="outline"
                 size="sm"
                 className="w-full"
-                onClick={() => updateProductStatus(product.id, 'archived')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  updateProductStatus(product.id, 'archived');
+                }}
                 disabled={actionLoading === product.id}
               >
                 <Archive className="w-4 h-4 mr-2" />
@@ -283,7 +291,10 @@ export default function Products() {
                 variant="led"
                 size="sm"
                 className="w-full"
-                onClick={() => updateProductStatus(product.id, 'active')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  updateProductStatus(product.id, 'active');
+                }}
                 disabled={actionLoading === product.id}
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
@@ -296,14 +307,17 @@ export default function Products() {
             variant="led"
             size="sm"
             className="w-full"
-            onClick={() => handleAddToCart(product.id)}
+            onClick={(e) => {
+              e.preventDefault();
+              handleAddToCart(product.id);
+            }}
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
             Add to Cart
           </Button>
         )}
       </div>
-    </div>
+    </Link>
   );
 
   const renderProductGrid = (productList: Product[], showAdminActions: boolean = false) => (

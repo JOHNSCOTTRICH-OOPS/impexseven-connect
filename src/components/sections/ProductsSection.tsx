@@ -137,9 +137,9 @@ const ProductsSection = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60" />
                   
-                  {/* Category Badge */}
-                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-medium uppercase tracking-wider">
-                    {product.category || "General"}
+                  {/* Category Badge - Red */}
+                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-500 text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                    {product.category || "Other"}
                   </span>
                   
                   {/* Verified/Unverified Badge */}
@@ -157,35 +157,22 @@ const ProductsSection = () => {
                     {product.product_name}
                   </h3>
                   
-                  {/* Location & Price */}
+                  {/* Location */}
                   <div className="flex items-center gap-2 text-muted-foreground text-sm mb-2">
                     <MapPin className="w-4 h-4" />
                     <span>{product.location}</span>
                   </div>
                   
-                  <p className="text-primary font-semibold text-lg mb-6">
-                    ${product.price_per_unit.toFixed(2)} / unit
+                  {/* Price */}
+                  <p className="text-primary font-semibold text-lg mb-2">
+                    ${product.price_per_unit.toFixed(2)} / Ton
                   </p>
 
-                  {/* Actions */}
+                  {/* Actions - View button only since whole card is clickable */}
                   <div className="flex gap-3">
-                    <Button variant="ledOutline" size="sm" className="flex-1">
+                    <Button variant="led" size="sm" className="w-full">
                       <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </Button>
-                    <Button 
-                      variant="led" 
-                      size="sm" 
-                      className="flex-1"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Navigate to product page for add to cart
-                        window.location.href = `/product/${product.id}`;
-                      }}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to Cart
+                      View Product
                     </Button>
                   </div>
                 </div>
