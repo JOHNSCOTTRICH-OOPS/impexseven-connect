@@ -53,21 +53,21 @@ const CategorySelector = ({ productId, currentCategory, onCategoryChanged }: Cat
 
   return (
     <div className="flex items-center gap-2">
-      <FolderOpen className="w-4 h-4 text-muted-foreground" />
+      <FolderOpen className="w-4 h-4 text-cyan-400" />
       <Select
         value={currentCategory || "Other"}
         onValueChange={handleCategoryChange}
         disabled={updating}
       >
-        <SelectTrigger className="h-8 text-xs flex-1">
+        <SelectTrigger className="h-8 text-xs flex-1 bg-slate-900 border-cyan-500/50 text-cyan-300 font-medium">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
-        <SelectContent className="bg-background border-border">
+        <SelectContent className="bg-slate-900 border-cyan-500/50">
           {categories.map((cat) => (
             <SelectItem 
               key={cat} 
               value={cat} 
-              className={`text-sm ${cat === "Other" ? "text-primary font-medium" : ""}`}
+              className={`text-sm ${cat === "Other" ? "text-amber-400 font-bold" : "text-cyan-200 hover:text-cyan-100"}`}
             >
               {cat}
             </SelectItem>
