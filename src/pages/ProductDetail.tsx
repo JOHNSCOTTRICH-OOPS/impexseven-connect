@@ -216,42 +216,60 @@ export default function ProductDetail() {
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Image Section */}
-            <div className="relative lg:col-span-1">
-              {product.photo_url ? (
-                <img
-                  src={product.photo_url}
-                  alt={product.product_name}
-                  className="w-full h-[400px] object-cover rounded-2xl"
-                />
-              ) : (
-                <div className="w-full h-[400px] bg-muted rounded-2xl flex items-center justify-center">
-                  <span className="text-muted-foreground text-lg">No image available</span>
-                </div>
-              )}
-
-              {/* Verification Badge */}
-              <div className="absolute top-4 right-4">
-                {product.verified ? (
-                  <Badge className="bg-primary/90 text-primary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1">
-                    <CheckCircle className="w-4 h-4" />
-                    Verified
-                  </Badge>
+            <div className="lg:col-span-1">
+              <div className="relative">
+                {product.photo_url ? (
+                  <img
+                    src={product.photo_url}
+                    alt={product.product_name}
+                    className="w-full h-[400px] object-cover rounded-2xl"
+                  />
                 ) : (
-                  <Badge
-                    variant="outline"
-                    className="bg-secondary/90 text-secondary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1"
-                  >
-                    <AlertTriangle className="w-4 h-4" />
-                    Unverified
-                  </Badge>
+                  <div className="w-full h-[400px] bg-muted rounded-2xl flex items-center justify-center">
+                    <span className="text-muted-foreground text-lg">No image available</span>
+                  </div>
                 )}
+
+                {/* Verification Badge */}
+                <div className="absolute top-4 right-4">
+                  {product.verified ? (
+                    <Badge className="bg-primary/90 text-primary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1">
+                      <CheckCircle className="w-4 h-4" />
+                      Verified
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="bg-secondary/90 text-secondary-foreground border-0 flex items-center gap-1 text-sm px-3 py-1"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      Unverified
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Category */}
+                <Badge className="absolute top-4 left-4 bg-amber-500 text-black font-bold shadow-lg">
+                  {product.category || "Other"}
+                </Badge>
               </div>
 
-              {/* Category */}
-              <Badge className="absolute top-4 left-4 bg-primary/80">
-                {product.category || "Other"}
-              </Badge>
+              {/* Price Disclaimer - Under Picture */}
+              <div className="p-3 rounded-xl bg-muted/50 border border-border mt-4">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground">Price Disclaimer:</span> The displayed price is indicative and may vary. The final price will be confirmed when you receive the official invoice.
+                  </p>
+                </div>
+              </div>
 
+              {/* Incoterms Info - Under Picture */}
+              <p className="text-xs text-muted-foreground mt-3">
+                {incoterm === "exw" && "Ex Works: Buyer arranges all transportation from seller's location."}
+                {incoterm === "fob" && "FOB: Seller delivers to the port, buyer arranges shipping from there."}
+                {incoterm === "cif" && "CIF: Seller covers cost, insurance & freight to destination country."}
+              </p>
             </div>
 
             {/* Details Section */}
@@ -333,23 +351,6 @@ export default function ProductDetail() {
                 destinationCountry={destinationCountry}
                 onDestinationCountryChange={setDestinationCountry}
               />
-
-              {/* Price Disclaimer */}
-              <div className="p-3 rounded-xl bg-muted/50 border border-border mb-4">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-medium text-foreground">Price Disclaimer:</span> The displayed price is indicative and may vary. The final price will be confirmed when you receive the official invoice.
-                  </p>
-                </div>
-              </div>
-
-              {/* Incoterms Info */}
-              <p className="text-xs text-muted-foreground mb-4">
-                {incoterm === "exw" && "Ex Works: Buyer arranges all transportation from seller's location."}
-                {incoterm === "fob" && "FOB: Seller delivers to the port, buyer arranges shipping from there."}
-                {incoterm === "cif" && "CIF: Seller covers cost, insurance & freight to destination country."}
-              </p>
 
               {/* Estimated Total */}
               <div className="card-glass p-3 rounded-xl mb-6">
