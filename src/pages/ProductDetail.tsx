@@ -324,6 +324,16 @@ export default function ProductDetail() {
                 </div>
               </div>
 
+              {/* Incoterms Selection */}
+              <IncotermsSelector
+                value={incoterm}
+                onChange={setIncoterm}
+                portLocation={portLocation}
+                onPortLocationChange={setPortLocation}
+                destinationCountry={destinationCountry}
+                onDestinationCountryChange={setDestinationCountry}
+              />
+
               {/* Price Disclaimer */}
               <div className="p-3 rounded-xl bg-muted/50 border border-border mb-4">
                 <div className="flex items-start gap-2">
@@ -334,15 +344,12 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              {/* Incoterms Selection */}
-              <IncotermsSelector
-                value={incoterm}
-                onChange={setIncoterm}
-                portLocation={portLocation}
-                onPortLocationChange={setPortLocation}
-                destinationCountry={destinationCountry}
-                onDestinationCountryChange={setDestinationCountry}
-              />
+              {/* Incoterms Info */}
+              <p className="text-xs text-muted-foreground mb-4">
+                {incoterm === "exw" && "Ex Works: Buyer arranges all transportation from seller's location."}
+                {incoterm === "fob" && "FOB: Seller delivers to the port, buyer arranges shipping from there."}
+                {incoterm === "cif" && "CIF: Seller covers cost, insurance & freight to destination country."}
+              </p>
 
               {/* Estimated Total */}
               <div className="card-glass p-3 rounded-xl mb-6">

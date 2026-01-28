@@ -130,12 +130,6 @@ const IncotermsSelector = ({
         </div>
       )}
 
-      {/* Incoterms Info */}
-      <p className="text-xs text-muted-foreground mt-3">
-        {value === "exw" && "Ex Works: Buyer arranges all transportation from seller's location."}
-        {value === "fob" && "FOB: Seller delivers to the port, buyer arranges shipping from there."}
-        {value === "cif" && "CIF: Seller covers cost, insurance & freight to destination country."}
-      </p>
     </div>
   );
 };
