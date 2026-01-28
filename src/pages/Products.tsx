@@ -200,7 +200,7 @@ export default function Products() {
         </div>
 
         {/* Category Badge */}
-        <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-xs font-medium uppercase tracking-wider">
+        <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-amber-500 text-black text-xs font-bold uppercase tracking-wider shadow-lg">
           {product.category || "Other"}
         </span>
       </Link>
@@ -224,12 +224,12 @@ export default function Products() {
           <span className="text-2xl font-bold text-gradient-led">
             ${product.price_per_unit.toFixed(2)}
           </span>
-          <span className="text-muted-foreground text-sm ml-1">/ unit</span>
+          <span className="text-muted-foreground text-sm ml-1">/ Ton</span>
         </div>
 
         {/* Production Range */}
         <p className="text-muted-foreground text-xs mb-4">
-          Available: {product.min_production} - {product.max_production} units
+          Available: {product.min_production} - {product.max_production} Tons
         </p>
 
         {/* Actions */}
