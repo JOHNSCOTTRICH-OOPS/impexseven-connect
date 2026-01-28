@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Package } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -79,13 +80,17 @@ const UserMenu = () => {
           )}
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <User className="mr-2 h-4 w-4" />
-          Profile
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link to="/profile">
+            <User className="mr-2 h-4 w-4" />
+            Profile
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link to="/profile">
+            <Package className="mr-2 h-4 w-4" />
+            My Orders
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">

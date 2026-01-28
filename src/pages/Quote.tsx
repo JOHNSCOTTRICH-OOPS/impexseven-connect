@@ -61,20 +61,35 @@ export default function Quote() {
         location: item.product?.location,
       }));
 
-      const { error } = await supabase.from("quote_requests").insert({
+      // Create quote request
+      const { data: quoteData, error: quoteError } = await supabase.from("quote_requests").insert({
         user_id: user.id,
         items: quoteItems,
         total_estimated: total,
         notes,
+      }).select().single();
+
+      if (quoteError) throw quoteError;
+
+      // Also create an order for tracking
+      const { error: orderError } = await supabase.from("orders").insert({
+        user_id: user.id,
+        quote_request_id: quoteData.id,
+        customer_name: user.email?.split('@')[0] || 'Customer',
+        customer_email: user.email || '',
+        items: quoteItems,
+        total_amount: total,
+        notes,
+        status: 'pending'
       });
 
-      if (error) throw error;
+      if (orderError) throw orderError;
 
       await clearCart();
 
       toast({
         title: "Quote request submitted!",
-        description: "We'll get back to you with a detailed quote soon.",
+        description: "We'll get back to you with a detailed quote soon. Check your profile for order status.",
       });
 
       navigate("/");
@@ -233,6 +248,12 @@ export default function Quote() {
                 onChange={(e) => setNotes(e.target.value)}
                 className="bg-muted/50 border-border min-h-[120px]"
               />
+              {!user && (
+                <p className="text-amber-500 text-sm mt-2 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  To submit your quote request, you need to login first
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}

@@ -85,7 +85,7 @@ const HeroSection = () => {
               { value: "100%", label: "Quality Assured" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="font-display text-3xl md:text-4xl font-bold led-text mb-2">
+                <div className="font-display text-3xl md:text-4xl font-bold text-primary mb-2">
                   {stat.value}
                 </div>
                 <div className="text-muted-foreground text-sm uppercase tracking-wider">
