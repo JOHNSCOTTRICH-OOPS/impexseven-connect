@@ -4,12 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check, ChevronLeft, ChevronRight, Package, Image, DollarSign, Send } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Package, Image, DollarSign, Send, AlertTriangle } from "lucide-react";
 import StepProductInfo from "./steps/StepProductInfo";
 import StepProductDetails from "./steps/StepProductDetails";
 import StepPricing from "./steps/StepPricing";
 import StepReview from "./steps/StepReview";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import AuthModal from "@/components/auth/AuthModal";
 
 export interface SellerFormData {
   productName: string;
@@ -35,6 +36,7 @@ export default function SellerWizard() {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState<SellerFormData>({
     productName: "",
     location: "",
@@ -82,11 +84,7 @@ export default function SellerWizard() {
 
   const handleSubmit = async () => {
     if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to submit your product.",
-        variant: "destructive",
-      });
+      setShowAuthModal(true);
       return;
     }
 
@@ -225,6 +223,14 @@ export default function SellerWizard() {
             <StepPricing formData={formData} updateFormData={updateFormData} />
           )}
           {currentStep === 4 && <StepReview formData={formData} />}
+          
+          {/* Login reminder on review step */}
+          {currentStep === 4 && !user && (
+            <p className="text-warning text-sm mt-4 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              To submit your product, you need to login first
+            </p>
+          )}
         </div>
 
         {/* Navigation */}
@@ -247,15 +253,17 @@ export default function SellerWizard() {
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting || !user}
+              disabled={isSubmitting}
               className="btn-gold"
             >
-              {isSubmitting ? "Submitting..." : "Submit Product"}
+              {isSubmitting ? "Submitting..." : user ? "Submit Product" : "Login to Submit"}
               <Send className="w-4 h-4 ml-2" />
             </Button>
           )}
         </div>
       </Card>
+      
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 }
