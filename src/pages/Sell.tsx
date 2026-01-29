@@ -1,15 +1,8 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SellerWizard from "@/components/seller/SellerWizard";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import AuthModal from "@/components/auth/AuthModal";
 
 export default function Sell() {
-  const { user } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -26,26 +19,11 @@ export default function Sell() {
             </p>
           </div>
 
-          {user ? (
-            <SellerWizard />
-          ) : (
-            <div className="max-w-md mx-auto text-center card-glass p-8 rounded-lg">
-              <h2 className="text-xl font-display font-semibold mb-4 text-foreground">
-                Sign in to continue
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                You need to be signed in to list your products for sale.
-              </p>
-              <Button onClick={() => setShowAuthModal(true)} className="btn-led">
-                Sign In / Sign Up
-              </Button>
-            </div>
-          )}
+          <SellerWizard />
         </div>
       </main>
 
       <Footer />
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 }
