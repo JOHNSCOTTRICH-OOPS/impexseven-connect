@@ -74,6 +74,13 @@ export type Database = {
             referencedRelation: "seller_products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products_with_email"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -131,6 +138,7 @@ export type Database = {
           avatar_url: string | null
           company_name: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -142,6 +150,7 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -153,6 +162,7 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -311,7 +321,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      seller_products_with_email: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          expiry_date: string | null
+          expiry_days: number | null
+          id: string | null
+          location: string | null
+          max_production: number | null
+          min_production: number | null
+          photo_url: string | null
+          price_per_unit: number | null
+          product_name: string | null
+          status: string | null
+          updated_at: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+          verified: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
