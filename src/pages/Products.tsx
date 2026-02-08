@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,9 @@ import {
   Clock, 
   CheckSquare,
   RotateCcw,
-  Search
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import SearchWithRecommendations from "@/components/search/SearchWithRecommendations";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
@@ -49,9 +48,15 @@ export default function Products() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const q = searchParams.get("search");
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchProducts();
@@ -364,16 +369,11 @@ export default function Products() {
             </p>
 
             {/* Search Bar */}
-            <div className="relative max-w-md mx-auto mt-8">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search products by name, location, or category..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-3 h-12 bg-card border-border rounded-full text-foreground placeholder:text-muted-foreground focus:border-primary/50"
-              />
-            </div>
+            <SearchWithRecommendations
+              value={searchQuery}
+              onChange={setSearchQuery}
+              className="max-w-md mx-auto mt-8"
+            />
           </div>
 
           {/* Admin Tabs */}

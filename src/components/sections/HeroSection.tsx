@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-spices.jpg";
 import { ArrowRight, Globe, Users } from "lucide-react";
+import SearchWithRecommendations from "@/components/search/SearchWithRecommendations";
 
 const HeroSection = () => {
+  const [heroSearch, setHeroSearch] = useState("");
   const scrollToProducts = () => {
     const productsSection = document.getElementById("products");
     if (productsSection) {
@@ -61,6 +64,16 @@ const HeroSection = () => {
             Premium spices, fresh seafood, exotic fruits & vegetables — sourced from 
             India's finest producers for discerning international markets.
           </p>
+
+          {/* Search Bar */}
+          <SearchWithRecommendations
+            value={heroSearch}
+            onChange={setHeroSearch}
+            placeholder="Search for spices, seafood, fruits..."
+            className="max-w-lg mx-auto mb-8"
+            navigateOnSelect
+            variant="hero"
+          />
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
