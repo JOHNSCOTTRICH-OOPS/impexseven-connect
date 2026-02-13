@@ -1,7 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowDown, Leaf, Package, Layers, Edit2, Check, X } from "lucide-react";
+import { ArrowDown, Leaf, Package, Layers, Edit2, Check, X, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -36,6 +43,7 @@ const EditableByproductsFlowchart = ({
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [customByproducts, setCustomByproducts] = useState<string[]>([]);
   const [editValue, setEditValue] = useState("");
 
@@ -62,19 +70,23 @@ const EditableByproductsFlowchart = ({
     if (!isAdmin) return;
     setEditingIndex(index);
     setEditValue(customByproducts[index]);
+    setIsEditModalOpen(true);
   };
 
-  const handleEditSave = (index: number) => {
+  const handleEditSave = () => {
+    if (editingIndex === null) return;
     if (editValue.trim()) {
       const newByproducts = [...customByproducts];
-      newByproducts[index] = editValue.trim();
+      newByproducts[editingIndex] = editValue.trim();
       setCustomByproducts(newByproducts);
     }
+    setIsEditModalOpen(false);
     setEditingIndex(null);
     setEditValue("");
   };
 
   const handleEditCancel = () => {
+    setIsEditModalOpen(false);
     setEditingIndex(null);
     setEditValue("");
   };
@@ -149,50 +161,55 @@ const EditableByproductsFlowchart = ({
               <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500" />
               
               {/* Byproduct Node */}
-              {editingIndex === index ? (
-                <div className="relative bg-muted/50 border-2 border-primary rounded-lg px-2 py-2">
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    className="text-xs h-7 mb-2"
-                    autoFocus
-                  />
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0"
-                      onClick={() => handleEditSave(index)}
-                    >
-                      <Check className="w-3 h-3 text-primary" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0"
-                      onClick={handleEditCancel}
-                    >
-                      <X className="w-3 h-3 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div 
-                  className={`relative bg-muted/50 border border-border rounded-lg px-3 py-3 text-center transition-all duration-300 group-hover:border-primary group-hover:bg-primary/10 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-105 group-hover:-translate-y-1 ${isAdmin ? 'cursor-pointer' : ''}`}
-                  onClick={() => handleEditStart(index)}
-                >
-                  <Leaf className="w-4 h-4 mx-auto mb-1.5 text-primary/70 transition-all duration-300 group-hover:text-primary group-hover:scale-110 group-hover:animate-pulse" />
-                  <span className="text-xs font-medium text-foreground block leading-tight transition-colors duration-300 group-hover:text-primary">
-                    {byproduct}
-                  </span>
-                  {isAdmin && (
-                    <Edit2 className="w-3 h-3 absolute top-1 right-1 text-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </div>
-              )}
+              <div 
+                className={`relative bg-muted/50 border border-border rounded-lg px-3 py-3 text-center transition-all duration-300 group-hover:border-primary group-hover:bg-primary/10 group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-105 group-hover:-translate-y-1 ${isAdmin ? 'cursor-pointer ring-1 ring-primary/20' : ''}`}
+                onClick={() => handleEditStart(index)}
+              >
+                <Leaf className="w-4 h-4 mx-auto mb-1.5 text-primary/70 transition-all duration-300 group-hover:text-primary group-hover:scale-110 group-hover:animate-pulse" />
+                <span className="text-xs font-medium text-foreground block leading-tight transition-colors duration-300 group-hover:text-primary">
+                  {byproduct}
+                </span>
+                {isAdmin && (
+                  <Edit2 className="w-3 h-3 absolute top-1 right-1 text-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                )}
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Edit Variant Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={(open) => !open && handleEditCancel()}>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-primary" />
+                Edit Product Form
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <Label className="text-sm font-medium">Form Name</Label>
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="mt-1"
+                  placeholder="e.g., Ground Powder, Flakes..."
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={handleEditCancel} size="sm">
+                <X className="w-4 h-4 mr-1" />
+                Cancel
+              </Button>
+              <Button variant="led" onClick={handleEditSave} size="sm">
+                <Save className="w-4 h-4 mr-1" />
+                Save
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Info text */}
         <p className="text-xs text-muted-foreground text-center mt-4 px-2">
