@@ -149,7 +149,7 @@ const IncotermsSelector = ({
   };
 
   return (
-    <div className="card-glass p-4 rounded-xl mb-4">
+    <div className="card-glass p-4 rounded-xl mb-4 relative z-[60]">
       <Label className="text-foreground mb-3 block text-sm font-semibold flex items-center gap-2">
         <Globe className="w-4 h-4 text-primary" />
         Incoterms
