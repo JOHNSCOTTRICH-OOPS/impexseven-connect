@@ -96,7 +96,7 @@ const AutocompleteInput = ({
         className="bg-muted/50 border-border text-sm h-10"
       />
       {showDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in-0 slide-in-from-top-1 duration-150 max-h-48 overflow-y-auto">
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-card border border-border rounded-xl shadow-lg z-[100] overflow-hidden animate-in fade-in-0 slide-in-from-bottom-1 duration-150 max-h-48 overflow-y-auto">
           {filtered.map((item) => {
             const idx = item.toLowerCase().indexOf(q);
             return (
