@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Search, TrendingUp, Tag, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.jpeg";
 
 interface ProductSuggestion {
   id: string;
@@ -177,6 +178,10 @@ const SearchWithRecommendations = ({
       {/* Empty state dropdown with trending, categories, locations */}
       {showEmptyDropdown && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-200">
+          {/* Logo */}
+          <div className="p-4 border-b border-border flex justify-center">
+            <img src={logo} alt="ImpexSeven Logo" className="h-12 object-contain" />
+          </div>
           {/* Trending Searches from real products */}
           {trendingNames.length > 0 && (
             <div className="p-4 border-b border-border">
