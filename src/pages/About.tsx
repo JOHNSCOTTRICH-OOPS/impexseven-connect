@@ -58,20 +58,13 @@ export default function About() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hidden file inputs */}
-      <input
-        ref={companyInputRef}
-        type="file"
-        accept="image/*"
-        onChange={(e) => handleImageUpload(e, "company")}
-        className="hidden"
-      />
-      <input
-        ref={founderInputRef}
-        type="file"
-        accept="image/*"
-        onChange={(e) => handleImageUpload(e, "founder")}
-        className="hidden"
+      {/* Photo Preview Dialog */}
+      <PhotoPreviewDialog
+        open={photoDialogType !== null}
+        onClose={() => setPhotoDialogType(null)}
+        type={photoDialogType || "company"}
+        currentImageUrl={photoDialogType === "founder" ? displayFounderPhoto : displayCompanyPhoto}
+        onUploaded={refetch}
       />
 
       <main className="pt-24 pb-16 relative overflow-hidden">
