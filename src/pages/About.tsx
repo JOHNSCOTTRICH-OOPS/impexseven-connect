@@ -295,16 +295,11 @@ export default function About() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              companyInputRef.current?.click();
+                              setPhotoDialogType("company");
                             }}
-                            disabled={uploadingCompany}
                             className="absolute top-2 right-2 p-2 rounded-full bg-background/90 border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                           >
-                            {uploadingCompany ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                            ) : (
-                              <Upload className="w-4 h-4 text-primary" />
-                            )}
+                            <Upload className="w-4 h-4 text-primary" />
                           </button>
                         )}
                       </div>
