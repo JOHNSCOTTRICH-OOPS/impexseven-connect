@@ -297,8 +297,10 @@ export default function About() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              e.preventDefault();
                               setPhotoDialogType("company");
                             }}
+                            onMouseDown={(e) => e.stopPropagation()}
                             className="absolute top-2 right-2 p-2 rounded-full bg-background/90 border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                           >
                             <Upload className="w-4 h-4 text-primary" />
