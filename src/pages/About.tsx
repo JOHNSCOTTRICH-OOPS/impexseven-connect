@@ -33,7 +33,7 @@ export default function About() {
   const [photoDialogType, setPhotoDialogType] = useState<"company" | "founder" | null>(null);
 
   const handleBoxClick = (view: "company" | "founder") => {
-    if (isFlipping) return;
+    if (isFlipping || photoDialogType !== null) return;
     
     if (activeView === view) {
       setIsFlipping(true);
