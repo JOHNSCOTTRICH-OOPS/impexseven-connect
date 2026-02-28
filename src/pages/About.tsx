@@ -1,12 +1,11 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Calendar, Globe2, Shield, TrendingUp, User, Building2, ArrowLeft, ArrowRight, Upload, Loader2 } from "lucide-react";
+import { Calendar, Globe2, Shield, TrendingUp, User, Building2, ArrowLeft, ArrowRight, Upload } from "lucide-react";
 import { useAboutImages } from "@/hooks/useAboutImages";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import founderPhotoDefault from "@/assets/founder-photo.jpg";
+import PhotoPreviewDialog from "@/components/about/PhotoPreviewDialog";
 
 const highlights = [
   {
