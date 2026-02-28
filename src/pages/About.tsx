@@ -30,10 +30,7 @@ export default function About() {
   const [isFlipping, setIsFlipping] = useState(false);
   const { companyPhotoUrl, founderPhotoUrl, refetch } = useAboutImages();
   const { isAdmin } = useIsAdmin();
-  const [uploadingCompany, setUploadingCompany] = useState(false);
-  const [uploadingFounder, setUploadingFounder] = useState(false);
-  const companyInputRef = useRef<HTMLInputElement>(null);
-  const founderInputRef = useRef<HTMLInputElement>(null);
+  const [photoDialogType, setPhotoDialogType] = useState<"company" | "founder" | null>(null);
 
   const handleBoxClick = (view: "company" | "founder") => {
     if (isFlipping) return;
@@ -50,63 +47,6 @@ export default function About() {
         setActiveView(view);
         setIsFlipping(false);
       }, 600);
-    }
-  };
-
-  const handleImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "company" | "founder"
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
-      return;
-    }
-
-    if (type === "company") setUploadingCompany(true);
-    else setUploadingFounder(true);
-
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${type}-photo.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("about-images")
-        .upload(fileName, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabase.storage
-        .from("about-images")
-        .getPublicUrl(fileName);
-
-      const publicUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
-
-      const { error: updateError } = await supabase
-        .from("about_settings")
-        .update({ 
-          setting_value: publicUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq("setting_key", `${type}_photo_url`);
-
-      if (updateError) throw updateError;
-
-      await refetch();
-      toast.success(`${type === "company" ? "Company" : "Founder"} photo updated!`);
-    } catch (error: any) {
-      console.error("Upload error:", error);
-      toast.error(error.message || "Failed to upload image");
-    } finally {
-      if (type === "company") setUploadingCompany(false);
-      else setUploadingFounder(false);
     }
   };
 
