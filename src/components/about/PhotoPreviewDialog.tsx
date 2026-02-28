@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Loader2, Check, ImageIcon } from "lucide-react";
+import { Upload, X, Loader2, Check, ImageIcon, Crop } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ReactCrop, { type Crop as CropType, type PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 interface PhotoPreviewDialogProps {
   open: boolean;
@@ -11,6 +13,40 @@ interface PhotoPreviewDialogProps {
   type: "company" | "founder";
   currentImageUrl: string | null;
   onUploaded: () => void;
+}
+
+function getCroppedBlob(image: HTMLImageElement, crop: PixelCrop): Promise<Blob> {
+  const canvas = document.createElement("canvas");
+  const scaleX = image.naturalWidth / image.width;
+  const scaleY = image.naturalHeight / image.height;
+  canvas.width = crop.width * scaleX;
+  canvas.height = crop.height * scaleY;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(
+    image,
+    crop.x * scaleX,
+    crop.y * scaleY,
+    crop.width * scaleX,
+    crop.height * scaleY,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Failed to crop image"));
+    }, "image/jpeg", 0.92);
+  });
+}
+
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
+  return centerCrop(
+    makeAspectCrop({ unit: "%", width: 80 }, aspect, mediaWidth, mediaHeight),
+    mediaWidth,
+    mediaHeight
+  );
 }
 
 export default function PhotoPreviewDialog({
@@ -22,12 +58,18 @@ export default function PhotoPreviewDialog({
 }: PhotoPreviewDialogProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [crop, setCrop] = useState<CropType>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [isCropping, setIsCropping] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const aspect = type === "founder" ? 1 : 16 / 9;
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
@@ -36,23 +78,56 @@ export default function PhotoPreviewDialog({
       toast.error("Image must be less than 5MB");
       return;
     }
-
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
+    setCroppedPreviewUrl(null);
+    setCompletedCrop(undefined);
+    setIsCropping(true);
+  };
+
+  const onImageLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const { width, height } = e.currentTarget;
+      setCrop(centerAspectCrop(width, height, aspect));
+    },
+    [aspect]
+  );
+
+  const handleApplyCrop = async () => {
+    if (!imgRef.current || !completedCrop) return;
+    try {
+      const blob = await getCroppedBlob(imgRef.current, completedCrop);
+      if (croppedPreviewUrl) URL.revokeObjectURL(croppedPreviewUrl);
+      const url = URL.createObjectURL(blob);
+      setCroppedPreviewUrl(url);
+      setIsCropping(false);
+      toast.success("Crop applied! Check the preview below.");
+    } catch {
+      toast.error("Failed to crop image");
+    }
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile && !croppedPreviewUrl) return;
     setUploading(true);
 
     try {
-      const fileExt = selectedFile.name.split(".").pop();
-      const fileName = `${type}-photo.${fileExt}`;
+      let fileToUpload: Blob;
+
+      if (croppedPreviewUrl && imgRef.current && completedCrop) {
+        fileToUpload = await getCroppedBlob(imgRef.current, completedCrop);
+      } else if (selectedFile) {
+        fileToUpload = selectedFile;
+      } else {
+        return;
+      }
+
+      const fileName = `${type}-photo.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("about-images")
-        .upload(fileName, selectedFile, { upsert: true });
+        .upload(fileName, fileToUpload, { upsert: true, contentType: "image/jpeg" });
 
       if (uploadError) throw uploadError;
 
@@ -85,22 +160,31 @@ export default function PhotoPreviewDialog({
 
   const handleClose = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (croppedPreviewUrl) URL.revokeObjectURL(croppedPreviewUrl);
     setSelectedFile(null);
     setPreviewUrl(null);
+    setCroppedPreviewUrl(null);
+    setCompletedCrop(undefined);
+    setIsCropping(false);
     onClose();
   };
 
   const removeSelected = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
+    if (croppedPreviewUrl) URL.revokeObjectURL(croppedPreviewUrl);
     setSelectedFile(null);
     setPreviewUrl(null);
+    setCroppedPreviewUrl(null);
+    setCompletedCrop(undefined);
+    setIsCropping(false);
   };
 
   const label = type === "company" ? "Company" : "Founder";
+  const finalPreview = croppedPreviewUrl || previewUrl;
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ImageIcon className="w-5 h-5 text-primary" />
@@ -108,62 +192,96 @@ export default function PhotoPreviewDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Current vs New comparison */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Current Photo */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground text-center">Current Photo</p>
-              <div className={`aspect-square rounded-xl border-2 border-border overflow-hidden flex items-center justify-center bg-muted/30 ${
-                type === "founder" ? "rounded-full mx-auto w-36 h-36" : ""
-              }`}>
-                {currentImageUrl ? (
-                  <img src={currentImageUrl} alt={`Current ${label}`} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="flex flex-col items-center text-muted-foreground">
-                    <ImageIcon className="w-8 h-8 mb-1" />
-                    <span className="text-xs">No photo</span>
-                  </div>
-                )}
+        <div className="space-y-5 py-2">
+          {/* Cropping Area */}
+          {previewUrl && isCropping && (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Crop className="w-4 h-4 text-primary" />
+                Drag to crop your photo
+              </p>
+              <div className="rounded-xl border border-border bg-muted/20 p-2 flex justify-center">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={aspect}
+                  className="max-h-[300px]"
+                >
+                  <img
+                    ref={imgRef}
+                    src={previewUrl}
+                    alt="Crop"
+                    onLoad={onImageLoad}
+                    className="max-h-[300px] object-contain"
+                  />
+                </ReactCrop>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" size="sm" onClick={() => setIsCropping(false)}>
+                  Skip Crop
+                </Button>
+                <Button size="sm" onClick={handleApplyCrop} disabled={!completedCrop} className="btn-led">
+                  <Check className="w-4 h-4 mr-1" />
+                  Apply Crop
+                </Button>
               </div>
             </div>
+          )}
 
-            {/* New Photo Preview */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-primary text-center">New Photo</p>
-              <div className={`aspect-square rounded-xl border-2 overflow-hidden flex items-center justify-center ${
-                previewUrl ? "border-primary bg-primary/5" : "border-dashed border-border bg-muted/10"
-              } ${type === "founder" ? "rounded-full mx-auto w-36 h-36" : ""}`}>
-                {previewUrl ? (
-                  <div className="relative w-full h-full group">
-                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                    <button
-                      onClick={removeSelected}
-                      className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <label className="flex flex-col items-center cursor-pointer text-muted-foreground hover:text-primary transition-colors p-4">
-                    <Upload className="w-8 h-8 mb-1" />
-                    <span className="text-xs text-center">Click to select</span>
-                    <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
-                  </label>
-                )}
+          {/* Side by side: Current vs New */}
+          {previewUrl && !isCropping && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground text-center">Current</p>
+                <div className={`aspect-square rounded-xl border-2 border-border overflow-hidden flex items-center justify-center bg-muted/30 ${
+                  type === "founder" ? "rounded-full mx-auto w-32 h-32" : ""
+                }`}>
+                  {currentImageUrl ? (
+                    <img src={currentImageUrl} alt={`Current ${label}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center text-muted-foreground">
+                      <ImageIcon className="w-8 h-8 mb-1" />
+                      <span className="text-xs">No photo</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-primary text-center">
+                  New {croppedPreviewUrl ? "(Cropped)" : ""}
+                </p>
+                <div className={`aspect-square rounded-xl border-2 border-primary overflow-hidden flex items-center justify-center bg-primary/5 relative group ${
+                  type === "founder" ? "rounded-full mx-auto w-32 h-32" : ""
+                }`}>
+                  <img src={finalPreview!} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={removeSelected}
+                    className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+                <div className="flex gap-1 justify-center">
+                  <Button variant="ghost" size="sm" onClick={() => setIsCropping(true)} className="text-xs">
+                    <Crop className="w-3 h-3 mr-1" />
+                    Re-crop
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Preview on page mockup */}
-          {previewUrl && (
+          {finalPreview && !isCropping && (
             <div className="space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Preview on About page:</p>
               <div className="rounded-xl border border-border bg-card/50 p-4">
                 {type === "founder" ? (
                   <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-secondary/50 flex-shrink-0">
-                      <img src={previewUrl} alt="Founder preview" className="w-full h-full object-cover" />
+                      <img src={finalPreview} alt="Founder preview" className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <p className="font-display font-bold text-foreground">Meet the Founder</p>
@@ -174,7 +292,7 @@ export default function PhotoPreviewDialog({
                 ) : (
                   <div>
                     <div className="w-full h-24 rounded-lg overflow-hidden border border-primary/30 mb-3">
-                      <img src={previewUrl} alt="Company preview" className="w-full h-full object-cover" />
+                      <img src={finalPreview} alt="Company preview" className="w-full h-full object-cover" />
                     </div>
                     <p className="font-display font-bold text-foreground">Your Trusted <span className="text-primary">Partner</span></p>
                     <p className="text-xs text-muted-foreground mt-1">ImpexSeven connects international buyers with premium Indian products...</p>
@@ -202,7 +320,7 @@ export default function PhotoPreviewDialog({
           <Button variant="outline" onClick={handleClose} disabled={uploading}>
             Cancel
           </Button>
-          <Button onClick={handleUpload} disabled={!selectedFile || uploading} className="btn-led">
+          <Button onClick={handleUpload} disabled={!selectedFile || uploading || isCropping} className="btn-led">
             {uploading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
