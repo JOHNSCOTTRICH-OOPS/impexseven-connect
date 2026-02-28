@@ -168,16 +168,11 @@ export default function About() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              founderInputRef.current?.click();
+                              setPhotoDialogType("founder");
                             }}
-                            disabled={uploadingFounder}
                             className="absolute top-0 right-0 p-2 rounded-full bg-background/90 border border-border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
                           >
-                            {uploadingFounder ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                            ) : (
-                              <Upload className="w-4 h-4 text-primary" />
-                            )}
+                            <Upload className="w-4 h-4 text-primary" />
                           </button>
                         )}
                       </div>
