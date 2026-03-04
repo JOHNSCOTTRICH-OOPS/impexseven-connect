@@ -59,6 +59,7 @@ export default function PhotoPreviewDialog({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
+  const [croppedBlob, setCroppedBlob] = useState<Blob | null>(null);
   const [uploading, setUploading] = useState(false);
   const [crop, setCrop] = useState<CropType>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -82,6 +83,7 @@ export default function PhotoPreviewDialog({
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     setCroppedPreviewUrl(null);
+    setCroppedBlob(null);
     setCompletedCrop(undefined);
     setIsCropping(true);
   };
@@ -100,6 +102,7 @@ export default function PhotoPreviewDialog({
       const blob = await getCroppedBlob(imgRef.current, completedCrop);
       if (croppedPreviewUrl) URL.revokeObjectURL(croppedPreviewUrl);
       const url = URL.createObjectURL(blob);
+      setCroppedBlob(blob);
       setCroppedPreviewUrl(url);
       setIsCropping(false);
       toast.success("Crop applied! Check the preview below.");
@@ -109,25 +112,18 @@ export default function PhotoPreviewDialog({
   };
 
   const handleUpload = async () => {
-    if (!selectedFile && !croppedPreviewUrl) return;
+    if (!selectedFile && !croppedBlob) return;
     setUploading(true);
 
     try {
-      let fileToUpload: Blob;
-
-      if (croppedPreviewUrl && imgRef.current && completedCrop) {
-        fileToUpload = await getCroppedBlob(imgRef.current, completedCrop);
-      } else if (selectedFile) {
-        fileToUpload = selectedFile;
-      } else {
-        return;
-      }
+      const fileToUpload: Blob | File = croppedBlob ?? selectedFile!;
+      const contentType = fileToUpload.type || "image/jpeg";
 
       const fileName = `${type}-photo.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("about-images")
-        .upload(fileName, fileToUpload, { upsert: true, contentType: "image/jpeg" });
+        .upload(fileName, fileToUpload, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
@@ -164,6 +160,7 @@ export default function PhotoPreviewDialog({
     setSelectedFile(null);
     setPreviewUrl(null);
     setCroppedPreviewUrl(null);
+    setCroppedBlob(null);
     setCompletedCrop(undefined);
     setIsCropping(false);
     onClose();
@@ -175,6 +172,7 @@ export default function PhotoPreviewDialog({
     setSelectedFile(null);
     setPreviewUrl(null);
     setCroppedPreviewUrl(null);
+    setCroppedBlob(null);
     setCompletedCrop(undefined);
     setIsCropping(false);
   };
