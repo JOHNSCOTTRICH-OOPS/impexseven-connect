@@ -102,6 +102,7 @@ export default function PhotoPreviewDialog({
       const blob = await getCroppedBlob(imgRef.current, completedCrop);
       if (croppedPreviewUrl) URL.revokeObjectURL(croppedPreviewUrl);
       const url = URL.createObjectURL(blob);
+      setCroppedBlob(blob);
       setCroppedPreviewUrl(url);
       setIsCropping(false);
       toast.success("Crop applied! Check the preview below.");
