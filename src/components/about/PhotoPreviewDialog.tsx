@@ -83,6 +83,7 @@ export default function PhotoPreviewDialog({
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     setCroppedPreviewUrl(null);
+    setCroppedBlob(null);
     setCompletedCrop(undefined);
     setIsCropping(true);
   };
