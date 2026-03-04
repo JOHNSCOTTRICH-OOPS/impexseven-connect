@@ -123,7 +123,7 @@ export default function PhotoPreviewDialog({
 
       const { error: uploadError } = await supabase.storage
         .from("about-images")
-        .upload(fileName, fileToUpload, { upsert: true, contentType: "image/jpeg" });
+        .upload(fileName, fileToUpload, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
