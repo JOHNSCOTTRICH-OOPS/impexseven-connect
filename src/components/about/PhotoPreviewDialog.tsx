@@ -160,6 +160,7 @@ export default function PhotoPreviewDialog({
     setSelectedFile(null);
     setPreviewUrl(null);
     setCroppedPreviewUrl(null);
+    setCroppedBlob(null);
     setCompletedCrop(undefined);
     setIsCropping(false);
     onClose();
