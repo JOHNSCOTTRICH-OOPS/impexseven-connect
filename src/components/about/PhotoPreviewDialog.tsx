@@ -112,19 +112,12 @@ export default function PhotoPreviewDialog({
   };
 
   const handleUpload = async () => {
-    if (!selectedFile && !croppedPreviewUrl) return;
+    if (!selectedFile && !croppedBlob) return;
     setUploading(true);
 
     try {
-      let fileToUpload: Blob;
-
-      if (croppedPreviewUrl && imgRef.current && completedCrop) {
-        fileToUpload = await getCroppedBlob(imgRef.current, completedCrop);
-      } else if (selectedFile) {
-        fileToUpload = selectedFile;
-      } else {
-        return;
-      }
+      const fileToUpload: Blob | File = croppedBlob ?? selectedFile!;
+      const contentType = fileToUpload.type || "image/jpeg";
 
       const fileName = `${type}-photo.jpg`;
 
