@@ -1,4 +1,4 @@
-import { Calendar, Globe2, Shield, TrendingUp } from "lucide-react";
+import { Globe2, Shield, TrendingUp } from "lucide-react";
 
 const AboutSection = () => {
   const highlights = [

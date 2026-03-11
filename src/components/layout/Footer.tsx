@@ -97,10 +97,10 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-primary mt-0.5" />
                 <a
-                  href="mailto:impexsevenindia@gmail.com"
+                  href="mailto:info@impexseven.com"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  impexsevenindia@gmail.com
+                  info@impexseven.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
