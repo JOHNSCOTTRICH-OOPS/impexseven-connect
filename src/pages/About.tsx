@@ -202,7 +202,7 @@ export default function About() {
                         Connect with me
                       </p>
                       <p className="font-medium text-foreground text-sm">
-                        impexsevenindia@gmail.com
+                        info@impexseven.com
                       </p>
                     </div>
                   </div>

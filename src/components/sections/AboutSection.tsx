@@ -1,4 +1,4 @@
-import { Calendar, Globe2, Shield, TrendingUp } from "lucide-react";
+import { Globe2, Shield, TrendingUp } from "lucide-react";
 
 const AboutSection = () => {
   const highlights = [
@@ -53,20 +53,6 @@ const AboutSection = () => {
               product meets international standards.
             </p>
 
-            {/* Founding Date */}
-            <div className="flex items-center gap-4 p-4 rounded-lg led-border bg-card/50">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Calendar className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">
-                  Established
-                </p>
-                <p className="font-display text-lg font-semibold text-foreground">
-                  7 August 2025
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Highlights Grid */}

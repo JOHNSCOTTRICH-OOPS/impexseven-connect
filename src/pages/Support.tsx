@@ -26,8 +26,8 @@ export default function Support() {
     {
       icon: Mail,
       label: "Email",
-      value: "impexsevenindia@gmail.com",
-      href: "mailto:impexsevenindia@gmail.com",
+      value: "info@impexseven.com",
+      href: "mailto:info@impexseven.com",
     },
     {
       icon: Phone,

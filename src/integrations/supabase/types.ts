@@ -133,6 +133,68 @@ export type Database = {
           },
         ]
       }
+      product_variants: {
+        Row: {
+          created_at: string
+          id: string
+          linked_product_id: string | null
+          parent_product_id: string
+          photo_url: string | null
+          sort_order: number
+          updated_at: string
+          variant_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_product_id?: string | null
+          parent_product_id: string
+          photo_url?: string | null
+          sort_order?: number
+          updated_at?: string
+          variant_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_product_id?: string | null
+          parent_product_id?: string
+          photo_url?: string | null
+          sort_order?: number
+          updated_at?: string
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_linked_product_id_fkey"
+            columns: ["linked_product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_variants_linked_product_id_fkey"
+            columns: ["linked_product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products_with_email"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_variants_parent_product_id_fkey"
+            columns: ["parent_product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_variants_parent_product_id_fkey"
+            columns: ["parent_product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products_with_email"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
