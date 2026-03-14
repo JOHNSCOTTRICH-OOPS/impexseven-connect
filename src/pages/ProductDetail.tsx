@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   ShoppingCart,
   MapPin,
   AlertTriangle,
   CheckCircle,
   ArrowLeft,
-  Calendar,
-  Package,
   Info,
+  Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
@@ -23,7 +21,6 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
-import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import IncotermsSelector from "@/components/product/IncotermsSelector";
 import AdminProductEditModal from "@/components/product/AdminProductEditModal";
