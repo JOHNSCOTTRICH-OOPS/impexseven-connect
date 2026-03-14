@@ -23,6 +23,7 @@ import { Save, X } from "lucide-react";
 interface Product {
   id: string;
   product_name: string;
+  description: string | null;
   price_per_unit: number;
   location: string;
   category: string | null;
