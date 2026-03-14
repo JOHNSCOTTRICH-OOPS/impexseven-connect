@@ -51,6 +51,7 @@ const AdminProductEditModal = ({
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     product_name: "",
+    description: "",
     price_per_unit: 0,
     location: "",
     category: "Other",
@@ -63,6 +64,7 @@ const AdminProductEditModal = ({
     if (product) {
       setFormData({
         product_name: product.product_name,
+        description: product.description || "",
         price_per_unit: product.price_per_unit,
         location: product.location,
         category: product.category || "Other",
