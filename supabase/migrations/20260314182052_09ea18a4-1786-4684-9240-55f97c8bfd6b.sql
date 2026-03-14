@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_products ADD COLUMN description text;
