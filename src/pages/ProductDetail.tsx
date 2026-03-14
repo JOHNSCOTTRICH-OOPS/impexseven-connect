@@ -101,33 +101,30 @@ export default function ProductDetail() {
     }
   };
 
+  const generateDescription = (p: Product) => {
+    const cat = p.category || "premium";
+    const loc = p.location || "India";
+    return `${p.product_name} is a high-quality ${cat.toLowerCase()} product sourced directly from trusted suppliers in ${loc}. This product is carefully selected to meet international export standards, ensuring freshness, purity, and consistency in every batch. Available in quantities ranging from ${p.min_production} to ${p.max_production} Tons, it is ideal for bulk buyers, wholesalers, and international traders looking for reliable supply chains. ${p.expiry_days ? `With a shelf life of ${p.expiry_days} days, it maintains optimal quality throughout storage and transit.` : ''} Our rigorous quality control processes guarantee that each shipment meets the highest standards of food safety and compliance. Whether you are sourcing for retail distribution, food manufacturing, or hospitality, ${p.product_name} offers exceptional value and consistent quality that your business can depend on.`;
+  };
+
   const handleAddToCart = () => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
-    
-    // Validate incoterm requirements
-    if (incoterm === "fob" && !portLocation.trim()) {
-      toast({
-        title: "Port location required",
-        description: "Please enter the destination port location for FOB delivery.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (incoterm === "cif" && !destinationCountry.trim()) {
-      toast({
-        title: "Destination country required",
-        description: "Please enter the destination country for CIF delivery.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     if (product) {
       addToCart(product.id, quantity, quantityUnit);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    if (product) {
+      addToCart(product.id, quantity, quantityUnit);
+      navigate("/cart");
     }
   };
 
