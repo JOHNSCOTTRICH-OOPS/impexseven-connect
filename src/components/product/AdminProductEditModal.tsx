@@ -23,6 +23,7 @@ import { Save, X } from "lucide-react";
 interface Product {
   id: string;
   product_name: string;
+  description: string | null;
   price_per_unit: number;
   location: string;
   category: string | null;
@@ -50,6 +51,7 @@ const AdminProductEditModal = ({
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     product_name: "",
+    description: "",
     price_per_unit: 0,
     location: "",
     category: "Other",
@@ -62,6 +64,7 @@ const AdminProductEditModal = ({
     if (product) {
       setFormData({
         product_name: product.product_name,
+        description: product.description || "",
         price_per_unit: product.price_per_unit,
         location: product.location,
         category: product.category || "Other",
@@ -81,6 +84,7 @@ const AdminProductEditModal = ({
         .from("seller_products")
         .update({
           product_name: formData.product_name,
+          description: formData.description || null,
           price_per_unit: formData.price_per_unit,
           location: formData.location,
           category: formData.category,
@@ -127,6 +131,16 @@ const AdminProductEditModal = ({
               value={formData.product_name}
               onChange={(e) => setFormData({ ...formData, product_name: e.target.value })}
               className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label>Description</Label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
+              placeholder="Product description..."
             />
           </div>
 

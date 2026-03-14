@@ -271,6 +271,7 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          description: string | null
           expiry_date: string | null
           expiry_days: number | null
           id: string
@@ -288,6 +289,7 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string
+          description?: string | null
           expiry_date?: string | null
           expiry_days?: number | null
           id?: string
@@ -305,6 +307,7 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string
+          description?: string | null
           expiry_date?: string | null
           expiry_days?: number | null
           id?: string

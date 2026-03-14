@@ -34,6 +34,7 @@ interface Product {
   id: string;
   user_id: string;
   product_name: string;
+  description: string | null;
   location: string;
   photo_url: string | null;
   price_per_unit: number;
@@ -272,25 +273,24 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Details Section */}
-            <div className="lg:col-span-1">
+            {/* Details Section - Scrollable */}
+            <div className="lg:col-span-1 lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 custom-scrollbar">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
                 {product.product_name}
               </h1>
 
               {/* Location */}
-              <div className="flex items-center gap-2 text-muted-foreground mb-4">
+              <div className="flex items-center gap-2 text-muted-foreground mb-3">
                 <MapPin className="w-5 h-5" />
                 <span className="text-base">{product.location}</span>
               </div>
 
-              {/* Price */}
-              <div className="mb-6">
-                <span className="text-3xl font-bold text-gradient-led">
-                  ${product.price_per_unit.toFixed(2)}
-                </span>
-                <span className="text-muted-foreground text-base ml-2">/ unit</span>
-              </div>
+              {/* Description */}
+              {product.description && (
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4 border-l-2 border-primary/30 pl-3">
+                  {product.description}
+                </p>
+              )}
 
               {/* Product Info */}
               <div className="grid grid-cols-2 gap-3 mb-6">
@@ -300,7 +300,7 @@ export default function ProductDetail() {
                     <span className="text-xs">Available Range</span>
                   </div>
                   <p className="font-semibold text-foreground text-sm">
-                    {product.min_production} - {product.max_production} units
+                    {product.min_production} - {product.max_production} Tons
                   </p>
                 </div>
 
@@ -394,8 +394,21 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Byproducts Flowchart Section */}
-            <div className="lg:col-span-1">
+            {/* Right Column: Price + Product Forms */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Price Box */}
+              <div className="card-glass p-6 rounded-2xl">
+                <div className="text-center">
+                  <span className="text-sm text-muted-foreground uppercase tracking-wider">Price per Ton</span>
+                  <div className="mt-2">
+                    <span className="text-4xl font-bold text-gradient-led">
+                      ${product.price_per_unit.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compact Product Forms */}
               <EditableByproductsFlowchart 
                 productName={product.product_name} 
                 category={product.category}
