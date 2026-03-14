@@ -135,6 +135,16 @@ const AdminProductEditModal = ({
           </div>
 
           <div>
+            <Label>Description</Label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
+              placeholder="Product description..."
+            />
+          </div>
+
+          <div>
             <Label>Price per Unit ($)</Label>
             <Input
               type="number"
