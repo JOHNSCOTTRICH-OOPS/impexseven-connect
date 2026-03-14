@@ -34,6 +34,7 @@ interface Product {
   id: string;
   user_id: string;
   product_name: string;
+  description: string | null;
   location: string;
   photo_url: string | null;
   price_per_unit: number;
