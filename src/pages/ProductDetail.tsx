@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   ShoppingCart,
   MapPin,
   AlertTriangle,
   CheckCircle,
   ArrowLeft,
-  Calendar,
-  Package,
   Info,
+  Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
@@ -23,7 +21,6 @@ import { useAuth } from "@/hooks/useAuth";
 import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
-import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import IncotermsSelector from "@/components/product/IncotermsSelector";
 import AdminProductEditModal from "@/components/product/AdminProductEditModal";
@@ -49,6 +46,7 @@ interface Product {
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -103,33 +101,30 @@ export default function ProductDetail() {
     }
   };
 
+  const generateDescription = (p: Product) => {
+    const cat = p.category || "premium";
+    const loc = p.location || "India";
+    return `${p.product_name} is a high-quality ${cat.toLowerCase()} product sourced directly from trusted suppliers in ${loc}. This product is carefully selected to meet international export standards, ensuring freshness, purity, and consistency in every batch. Available in quantities ranging from ${p.min_production} to ${p.max_production} Tons, it is ideal for bulk buyers, wholesalers, and international traders looking for reliable supply chains. ${p.expiry_days ? `With a shelf life of ${p.expiry_days} days, it maintains optimal quality throughout storage and transit.` : ''} Our rigorous quality control processes guarantee that each shipment meets the highest standards of food safety and compliance. Whether you are sourcing for retail distribution, food manufacturing, or hospitality, ${p.product_name} offers exceptional value and consistent quality that your business can depend on.`;
+  };
+
   const handleAddToCart = () => {
     if (!user) {
       setShowAuthModal(true);
       return;
     }
-    
-    // Validate incoterm requirements
-    if (incoterm === "fob" && !portLocation.trim()) {
-      toast({
-        title: "Port location required",
-        description: "Please enter the destination port location for FOB delivery.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (incoterm === "cif" && !destinationCountry.trim()) {
-      toast({
-        title: "Destination country required",
-        description: "Please enter the destination country for CIF delivery.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     if (product) {
       addToCart(product.id, quantity, quantityUnit);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    if (product) {
+      addToCart(product.id, quantity, quantityUnit);
+      navigate("/cart");
     }
   };
 
@@ -273,104 +268,41 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Details Section - Scrollable */}
+            {/* Details Section - Scrollable with big description */}
             <div className="lg:col-span-1 lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 custom-scrollbar">
               <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
                 {product.product_name}
               </h1>
 
               {/* Location */}
-              <div className="flex items-center gap-2 text-muted-foreground mb-3">
+              <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <MapPin className="w-5 h-5" />
                 <span className="text-base">{product.location}</span>
               </div>
 
               {/* Description */}
-              {product.description && (
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4 border-l-2 border-primary/30 pl-3">
-                  {product.description}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">Product Description</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {product.description || generateDescription(product)}
                 </p>
-              )}
-
-              {/* Product Info */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="card-glass p-3 rounded-xl">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Package className="w-4 h-4" />
-                    <span className="text-xs">Available Range</span>
-                  </div>
-                  <p className="font-semibold text-foreground text-sm">
-                    {product.min_production} - {product.max_production} Tons
-                  </p>
-                </div>
-
-                <div className="card-glass p-3 rounded-xl">
-                  <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-xs">Shelf Life</span>
-                  </div>
-                  <p className="font-semibold text-foreground text-sm">
-                    {product.expiry_days ? `${product.expiry_days} days` : "N/A"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Quantity Selection */}
-              <div className="space-y-3 mb-4">
-                <div className="flex items-end gap-3">
-                  <div className="flex-1">
-                    <Label className="text-foreground mb-2 block text-sm">Quantity (Tons)</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={quantity}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === '') {
-                          setQuantity(0);
-                        } else {
-                          setQuantity(parseInt(val) || 0);
-                        }
-                      }}
-                      onBlur={() => {
-                        if (quantity < 1) setQuantity(1);
-                      }}
-                      className="bg-muted/50 border-border"
-                    />
-                  </div>
-                  <span className="text-sm text-muted-foreground pb-2.5 font-medium">Tons</span>
-                </div>
               </div>
 
               {/* Incoterms Selection */}
-              <IncotermsSelector
-                value={incoterm}
-                onChange={setIncoterm}
-                portLocation={portLocation}
-                onPortLocationChange={setPortLocation}
-                destinationCountry={destinationCountry}
-                onDestinationCountryChange={setDestinationCountry}
-              />
-
-              {/* Estimated Total */}
-              <div className="card-glass p-3 rounded-xl mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground text-sm">Estimated Total:</span>
-                  <span className="text-xl font-bold text-gradient-gold">
-                    ${(product.price_per_unit * quantity).toFixed(2)}
-                  </span>
-                </div>
+              <div className="mt-6">
+                <IncotermsSelector
+                  value={incoterm}
+                  onChange={setIncoterm}
+                  portLocation={portLocation}
+                  onPortLocationChange={setPortLocation}
+                  destinationCountry={destinationCountry}
+                  onDestinationCountryChange={setDestinationCountry}
+                />
               </div>
 
-              {/* Actions */}
-              <div className="space-y-3">
-                <Button variant="led" size="lg" className="w-full" onClick={handleAddToCart}>
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Add to Cart
-                </Button>
-
-                {/* Admin Verification Toggle */}
-                {isAdmin && (
+              {/* Admin Verification Toggle */}
+              {isAdmin && (
+                <div className="mt-4">
                   <Button
                     variant={product.verified ? "outline" : "gold"}
                     size="lg"
@@ -390,14 +322,14 @@ export default function ProductDetail() {
                       </>
                     )}
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* Right Column: Price + Product Forms */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Price Box */}
-              <div className="card-glass p-6 rounded-2xl">
+            {/* Right Column: Price + Quantity + Actions */}
+            <div className="lg:col-span-1">
+              <div className="card-glass p-6 rounded-2xl sticky top-28 space-y-5">
+                {/* Price */}
                 <div className="text-center">
                   <span className="text-sm text-muted-foreground uppercase tracking-wider">Price per Ton</span>
                   <div className="mt-2">
@@ -406,15 +338,54 @@ export default function ProductDetail() {
                     </span>
                   </div>
                 </div>
-              </div>
 
-              {/* Compact Product Forms */}
-              <EditableByproductsFlowchart 
-                productName={product.product_name} 
-                category={product.category}
-                productId={product.id}
-                onProductEdit={() => setShowEditModal(true)}
-              />
+                <hr className="border-border" />
+
+                {/* Quantity */}
+                <div>
+                  <Label className="text-foreground mb-2 block text-sm">Quantity (Tons)</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="number"
+                      min={1}
+                      value={quantity}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '') {
+                          setQuantity(0);
+                        } else {
+                          setQuantity(parseInt(val) || 0);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (quantity < 1) setQuantity(1);
+                      }}
+                      className="bg-muted/50 border-border"
+                    />
+                    <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">Tons</span>
+                  </div>
+                </div>
+
+                {/* Estimated Total */}
+                <div className="flex justify-between items-center p-3 rounded-xl bg-muted/30">
+                  <span className="text-muted-foreground text-sm">Estimated Total:</span>
+                  <span className="text-xl font-bold text-gradient-gold">
+                    ${(product.price_per_unit * quantity).toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Add to Cart */}
+                <Button variant="led" size="lg" className="w-full" onClick={handleAddToCart}>
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Add to Cart
+                </Button>
+
+                {/* Buy Now */}
+                <Button variant="gold" size="lg" className="w-full" onClick={handleBuyNow}>
+                  <Zap className="w-5 h-5 mr-2" />
+                  Buy Now
+                </Button>
+              </div>
             </div>
           </div>
 
