@@ -5,15 +5,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MapPin, Phone, Send, MessageSquare, HelpCircle } from "lucide-react";
+import { Mail, MapPin, Phone, Send, MessageSquare, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+
+const commonTopics = [
+  {
+    icon: HelpCircle,
+    question: "How do I place an order?",
+    answer:
+      "To place an order, browse our products, select the items you need, choose your preferred Incoterm, set the quantity, and click 'Add to Cart' or 'Buy Now'. Once you proceed to checkout, your order will be placed and our team will confirm it with an official invoice.",
+  },
+  {
+    icon: MessageSquare,
+    question: "Shipping & Delivery",
+    answer:
+      "We offer shipping via Land, Air, and Ocean freight depending on the destination and product type. Our logistics team coordinates the best route and carrier for your order to ensure timely and safe delivery worldwide.",
+  },
+  {
+    icon: HelpCircle,
+    question: "Product Quality Assurance",
+    answer:
+      "All our products go through rigorous quality control processes. We ensure freshness, purity, and compliance with international food safety standards before every shipment leaves our facility.",
+  },
+];
 
 export default function Support() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     company_name: "",
@@ -26,8 +48,8 @@ export default function Support() {
     {
       icon: Mail,
       label: "Email",
-      value: "info@impexseven.com",
-      href: "mailto:info@impexseven.com",
+      value: "support@impexseven.com",
+      href: "mailto:support@impexseven.com",
     },
     {
       icon: Phone,
@@ -82,13 +104,7 @@ export default function Support() {
         description: "We'll get back to you as soon as possible.",
       });
 
-      setFormData({
-        name: "",
-        company_name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
+      setFormData({ name: "", company_name: "", email: "", subject: "", message: "" });
     } catch (error: any) {
       console.error("Error submitting support request:", error);
       toast({
@@ -158,32 +174,40 @@ export default function Support() {
                 ))}
               </div>
 
-              {/* FAQ Cards */}
-              <div className="space-y-4">
+              {/* FAQ Cards with toggle answers */}
+              <div className="space-y-3">
                 <h3 className="font-display text-lg font-semibold text-foreground">
                   Common Topics
                 </h3>
-                
-                <div className="card-glass p-4 rounded-xl hover:border-primary/50 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-primary" />
-                    <span className="text-foreground">How do I place an order?</span>
+
+                {commonTopics.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="card-glass rounded-xl overflow-hidden transition-colors hover:border-primary/50"
+                  >
+                    <button
+                      className="w-full flex items-center justify-between gap-3 p-4 text-left"
+                      onClick={() => setExpandedTopic(expandedTopic === index ? null : index)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <topic.icon className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-foreground font-medium">{topic.question}</span>
+                      </div>
+                      {expandedTopic === index ? (
+                        <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      )}
+                    </button>
+                    {expandedTopic === index && (
+                      <div className="px-4 pb-4 pt-0">
+                        <p className="text-sm text-muted-foreground leading-relaxed pl-8">
+                          {topic.answer}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-                
-                <div className="card-glass p-4 rounded-xl hover:border-primary/50 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                    <span className="text-foreground">Shipping & Delivery</span>
-                  </div>
-                </div>
-                
-                <div className="card-glass p-4 rounded-xl hover:border-primary/50 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-primary" />
-                    <span className="text-foreground">Product Quality Assurance</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -196,9 +220,7 @@ export default function Support() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground mb-2 block">
-                      Your Name *
-                    </Label>
+                    <Label className="text-sm text-muted-foreground mb-2 block">Your Name *</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -208,9 +230,7 @@ export default function Support() {
                     />
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground mb-2 block">
-                      Company Name
-                    </Label>
+                    <Label className="text-sm text-muted-foreground mb-2 block">Company Name</Label>
                     <Input
                       value={formData.company_name}
                       onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
@@ -221,9 +241,7 @@ export default function Support() {
                 </div>
 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">
-                    Email Address *
-                  </Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Email Address *</Label>
                   <Input
                     type="email"
                     value={formData.email}
@@ -235,9 +253,7 @@ export default function Support() {
                 </div>
 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">
-                    Subject *
-                  </Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Subject *</Label>
                   <Input
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -248,9 +264,7 @@ export default function Support() {
                 </div>
 
                 <div>
-                  <Label className="text-sm text-muted-foreground mb-2 block">
-                    Message *
-                  </Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Message *</Label>
                   <Textarea
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -261,9 +275,7 @@ export default function Support() {
                 </div>
 
                 <Button type="submit" variant="led" size="lg" className="w-full" disabled={submitting}>
-                  {submitting ? (
-                    "Sending..."
-                  ) : (
+                  {submitting ? "Sending..." : (
                     <>
                       <Send className="w-4 h-4 mr-2" />
                       Send Message
