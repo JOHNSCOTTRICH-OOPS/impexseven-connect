@@ -14,6 +14,9 @@ import {
   ArrowLeft,
   Info,
   Zap,
+  Clock,
+  Package,
+  Edit2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
@@ -24,6 +27,7 @@ import { getUserFriendlyError } from "@/lib/errorHandler";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import IncotermsSelector from "@/components/product/IncotermsSelector";
 import AdminProductEditModal from "@/components/product/AdminProductEditModal";
+import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
 
 const ADMIN_EMAIL = "njohnscottrich@gmail.com";
 
@@ -71,17 +75,12 @@ export default function ProductDetail() {
     }
   }, [id]);
 
-  // Check admin status when user changes
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user?.email) {
-        setIsAdmin(false);
-        return;
-      }
-      setIsAdmin(user.email === ADMIN_EMAIL);
-    };
-
-    checkAdminStatus();
+    if (!user?.email) {
+      setIsAdmin(false);
+      return;
+    }
+    setIsAdmin(user.email === ADMIN_EMAIL);
   }, [user]);
 
   const fetchProduct = async () => {
@@ -104,7 +103,7 @@ export default function ProductDetail() {
   const generateDescription = (p: Product) => {
     const cat = p.category || "premium";
     const loc = p.location || "India";
-    return `${p.product_name} is a high-quality ${cat.toLowerCase()} product sourced directly from trusted suppliers in ${loc}. This product is carefully selected to meet international export standards, ensuring freshness, purity, and consistency in every batch. Available in quantities ranging from ${p.min_production} to ${p.max_production} Tons, it is ideal for bulk buyers, wholesalers, and international traders looking for reliable supply chains. ${p.expiry_days ? `With a shelf life of ${p.expiry_days} days, it maintains optimal quality throughout storage and transit.` : ''} Our rigorous quality control processes guarantee that each shipment meets the highest standards of food safety and compliance. Whether you are sourcing for retail distribution, food manufacturing, or hospitality, ${p.product_name} offers exceptional value and consistent quality that your business can depend on.`;
+    return `${p.product_name} is a high-quality ${cat.toLowerCase()} product sourced from trusted suppliers in ${loc}. Carefully selected to meet international export standards, ensuring freshness, purity, and consistency in every batch.`;
   };
 
   const handleAddToCart = () => {
@@ -133,7 +132,6 @@ export default function ProductDetail() {
 
     setVerifying(true);
     try {
-      // Use secure RPC function that validates admin role server-side
       const { data, error } = await supabase.rpc('toggle_product_verification', {
         _product_id: product.id
       });
@@ -250,7 +248,7 @@ export default function ProductDetail() {
                 </Badge>
               </div>
 
-              {/* Price Disclaimer - Under Picture */}
+              {/* Price Disclaimer */}
               <div className="p-3 rounded-xl bg-muted/50 border border-border mt-4">
                 <div className="flex items-start gap-2">
                   <Info className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -260,7 +258,7 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              {/* Incoterms Info - Under Picture */}
+              {/* Incoterms Info */}
               <p className="text-xs text-muted-foreground mt-3">
                 {incoterm === "exw" && "Ex Works: Buyer arranges all transportation from seller's location."}
                 {incoterm === "fob" && "FOB: Seller delivers to the port, buyer arranges shipping from there."}
@@ -268,11 +266,24 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Details Section - Scrollable with big description */}
+            {/* Details Section */}
             <div className="lg:col-span-1 lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 custom-scrollbar">
-              <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
-                {product.product_name}
-              </h1>
+              {/* Product Name + Admin Edit */}
+              <div className="flex items-start justify-between mb-4">
+                <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
+                  {product.product_name}
+                </h1>
+                {isAdmin && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary hover:bg-primary/10 flex-shrink-0 ml-2"
+                    onClick={() => setShowEditModal(true)}
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
 
               {/* Location */}
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
@@ -280,16 +291,47 @@ export default function ProductDetail() {
                 <span className="text-base">{product.location}</span>
               </div>
 
-              {/* Description */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">Product Description</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+              {/* Quantity & Shelf Life Info */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/50 border border-border">
+                  <Package className="w-5 h-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Production</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {product.min_production} - {product.max_production} T
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/50 border border-border">
+                  <Clock className="w-5 h-5 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Shelf Life</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {product.expiry_days ? `${product.expiry_days} days` : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description (3-4 lines) */}
+              <div className="mb-5">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Product Description</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-4">
                   {product.description || generateDescription(product)}
                 </p>
               </div>
 
+              {/* Product Forms (Variants) as buttons */}
+              <EditableByproductsFlowchart
+                productName={product.product_name}
+                category={product.category}
+                productId={product.id}
+                onProductEdit={() => setShowEditModal(true)}
+                compact
+              />
+
               {/* Incoterms Selection */}
-              <div className="mt-6">
+              <div className="mt-5">
                 <IncotermsSelector
                   value={incoterm}
                   onChange={setIncoterm}

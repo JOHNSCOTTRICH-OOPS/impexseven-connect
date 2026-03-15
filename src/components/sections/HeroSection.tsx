@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-spices.jpg";
 import { ArrowRight, Globe, Users } from "lucide-react";
 import SearchWithRecommendations from "@/components/search/SearchWithRecommendations";
+import { supabase } from "@/integrations/supabase/client";
 
 const HeroSection = () => {
   const [heroSearch, setHeroSearch] = useState("");
+  const [productCount, setProductCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("seller_products")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "active");
+      if (count !== null) {
+        // Round down to nearest 10
+        setProductCount(Math.floor(count / 10) * 10);
+      }
+    };
+    fetchCount();
+  }, []);
+
   const scrollToProducts = () => {
     const productsSection = document.getElementById("products");
     if (productsSection) {
@@ -93,12 +110,12 @@ const HeroSection = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
             {[
-              { value: "50+", label: "Countries Served" },
-              { value: "200+", label: "Product Varieties" },
+              { value: "Ready To Do It", label: "Global Reach" },
+              { value: `${productCount}+`, label: "Products Listed" },
               { value: "100%", label: "Quality Assured" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="font-display text-3xl md:text-4xl font-bold text-primary mb-2">
+                <div className={`font-display font-bold text-primary mb-2 ${index === 0 ? "text-xl md:text-2xl" : "text-3xl md:text-4xl"}`}>
                   {stat.value}
                 </div>
                 <div className="text-muted-foreground text-sm uppercase tracking-wider">
