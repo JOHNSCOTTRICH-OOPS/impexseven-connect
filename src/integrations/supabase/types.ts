@@ -133,6 +133,33 @@ export type Database = {
           },
         ]
       }
+      password_reset_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          new_password: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          new_password?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          new_password?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_variants: {
         Row: {
           created_at: string

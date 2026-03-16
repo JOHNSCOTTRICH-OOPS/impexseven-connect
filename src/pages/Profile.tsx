@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import AuthModal from "@/components/auth/AuthModal";
+import PasswordResetRequests from "@/components/admin/PasswordResetRequests";
 import {
   User,
   Package,
@@ -364,6 +365,13 @@ export default function Profile() {
               </div>
             )}
           </div>
+
+          {/* Admin: Password Reset Requests */}
+          {isAdmin && (
+            <div className="max-w-4xl mx-auto mt-12">
+              <PasswordResetRequests />
+            </div>
+          )}
         </div>
       </main>
 
