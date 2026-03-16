@@ -365,6 +365,13 @@ export default function Profile() {
               </div>
             )}
           </div>
+
+          {/* Admin: Password Reset Requests */}
+          {isAdmin && (
+            <div className="max-w-4xl mx-auto mt-12">
+              <PasswordResetRequests />
+            </div>
+          )}
         </div>
       </main>
 
