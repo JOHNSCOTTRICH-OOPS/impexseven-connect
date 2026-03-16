@@ -108,8 +108,9 @@ const HeroSection = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-8 mt-16 max-w-xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
             {[
+              { value: "50+", label: "Country's Ready to Serve" },
               { value: `${productCount}+`, label: "Products Listed" },
               { value: "100%", label: "Quality Assured" },
             ].map((stat, index) => (
