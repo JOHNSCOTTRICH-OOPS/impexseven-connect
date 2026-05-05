@@ -24,6 +24,8 @@ interface Product {
   category: string | null;
   location: string;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   photo_url: string | null;
   verified: boolean;
 }
