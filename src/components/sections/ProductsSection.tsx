@@ -8,6 +8,7 @@ import spicesImg from "@/assets/spices.jpg";
 import seafoodImg from "@/assets/seafood.jpg";
 import fruitsImg from "@/assets/fruits.jpg";
 import vegetablesImg from "@/assets/vegetables.jpg";
+import { formatPriceRange } from "@/lib/priceFormat";
 const categories = ["All", "Spices", "Seafood", "Fruits", "Vegetables"];
 
 // Fallback images for products without photos
