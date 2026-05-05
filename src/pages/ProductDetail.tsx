@@ -28,6 +28,7 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import IncotermsSelector from "@/components/product/IncotermsSelector";
 import AdminProductEditModal from "@/components/product/AdminProductEditModal";
 import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 const ADMIN_EMAIL = "njohnscottrich@gmail.com";
 
