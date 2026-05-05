@@ -62,7 +62,7 @@ export default function SellerWizard() {
       case 2:
         return formData.minProduction > 0 && formData.maxProduction >= formData.minProduction;
       case 3:
-        return formData.pricePerUnit > 0 && (formData.expiryDays !== null || formData.expiryDate !== "");
+        return formData.minPrice > 0 && formData.maxPrice >= formData.minPrice && (formData.expiryDays !== null || formData.expiryDate !== "");
       default:
         return true;
     }
