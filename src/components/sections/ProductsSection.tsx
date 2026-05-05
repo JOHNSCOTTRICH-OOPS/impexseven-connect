@@ -39,7 +39,7 @@ const ProductsSection = () => {
     const fetchProducts = async () => {
       const { data, error } = await supabase
         .from("seller_products")
-        .select("id, product_name, category, location, price_per_unit, photo_url, verified")
+        .select("id, product_name, category, location, price_per_unit, min_price, max_price, photo_url, verified")
         .eq("status", "active")
         .limit(6);
 
