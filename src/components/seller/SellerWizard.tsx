@@ -143,7 +143,8 @@ export default function SellerWizard() {
         photoPreview: "",
         minProduction: 100,
         maxProduction: 1000,
-        pricePerUnit: 0,
+        minPrice: 0,
+        maxPrice: 0,
         expiryDays: 30,
         expiryDate: "",
       });
