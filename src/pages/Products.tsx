@@ -23,6 +23,7 @@ import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import CategorySelector from "@/components/product/CategorySelector";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 interface Product {
   id: string;
