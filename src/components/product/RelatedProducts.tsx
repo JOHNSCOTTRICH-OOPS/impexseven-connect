@@ -167,7 +167,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
 
               <div className="flex items-center justify-between">
                 <span className="font-bold text-primary text-sm md:text-base">
-                  ${product.price_per_unit.toFixed(2)}
+                  {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
                 </span>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary">
                   <Eye className="w-3 h-3 mr-1" />
