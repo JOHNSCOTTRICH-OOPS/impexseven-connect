@@ -121,7 +121,9 @@ export default function SellerWizard() {
         photo_url: photoUrl,
         min_production: formData.minProduction,
         max_production: formData.maxProduction,
-        price_per_unit: formData.pricePerUnit,
+        price_per_unit: formData.minPrice,
+        min_price: formData.minPrice,
+        max_price: formData.maxPrice,
         expiry_days: formData.expiryDays,
         expiry_date: formData.expiryDate || null,
       });
