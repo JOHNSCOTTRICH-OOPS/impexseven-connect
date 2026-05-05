@@ -303,7 +303,9 @@ export type Database = {
           expiry_days: number | null
           id: string
           location: string
+          max_price: number | null
           max_production: number
+          min_price: number | null
           min_production: number
           photo_url: string | null
           price_per_unit: number
@@ -321,7 +323,9 @@ export type Database = {
           expiry_days?: number | null
           id?: string
           location: string
+          max_price?: number | null
           max_production: number
+          min_price?: number | null
           min_production: number
           photo_url?: string | null
           price_per_unit: number
@@ -339,7 +343,9 @@ export type Database = {
           expiry_days?: number | null
           id?: string
           location?: string
+          max_price?: number | null
           max_production?: number
+          min_price?: number | null
           min_production?: number
           photo_url?: string | null
           price_per_unit?: number
