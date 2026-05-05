@@ -91,7 +91,9 @@ const AdminProductEditModal = ({
         .update({
           product_name: formData.product_name,
           description: formData.description || null,
-          price_per_unit: formData.price_per_unit,
+          price_per_unit: formData.min_price,
+          min_price: formData.min_price,
+          max_price: formData.max_price,
           location: formData.location,
           category: formData.category,
           min_production: formData.min_production,
