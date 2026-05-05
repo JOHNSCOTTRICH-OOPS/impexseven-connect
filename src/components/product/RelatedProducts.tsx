@@ -45,7 +45,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
     try {
       let query = supabase
         .from("seller_products")
-        .select("id, product_name, location, photo_url, price_per_unit, verified, category")
+        .select("id, product_name, location, photo_url, price_per_unit, min_price, max_price, verified, category")
         .neq("id", currentProductId)
         .eq("status", "active")
         .limit(4);
@@ -64,7 +64,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
         const existingIds = data.map(p => p.id);
         const { data: moreProducts, error: moreError } = await supabase
           .from("seller_products")
-          .select("id, product_name, location, photo_url, price_per_unit, verified, category")
+          .select("id, product_name, location, photo_url, price_per_unit, min_price, max_price, verified, category")
           .neq("id", currentProductId)
           .eq("status", "active")
           .limit(4 - data.length);
