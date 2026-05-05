@@ -25,6 +25,8 @@ interface Product {
   product_name: string;
   description: string | null;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   location: string;
   category: string | null;
   min_production: number;
