@@ -8,6 +8,7 @@ import spicesImg from "@/assets/spices.jpg";
 import seafoodImg from "@/assets/seafood.jpg";
 import fruitsImg from "@/assets/fruits.jpg";
 import vegetablesImg from "@/assets/vegetables.jpg";
+import { formatPriceRange } from "@/lib/priceFormat";
 const categories = ["All", "Spices", "Seafood", "Fruits", "Vegetables"];
 
 // Fallback images for products without photos
@@ -24,6 +25,8 @@ interface Product {
   category: string | null;
   location: string;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   photo_url: string | null;
   verified: boolean;
 }
@@ -37,7 +40,7 @@ const ProductsSection = () => {
     const fetchProducts = async () => {
       const { data, error } = await supabase
         .from("seller_products")
-        .select("id, product_name, category, location, price_per_unit, photo_url, verified")
+        .select("id, product_name, category, location, price_per_unit, min_price, max_price, photo_url, verified")
         .eq("status", "active")
         .limit(6);
 
@@ -165,7 +168,7 @@ const ProductsSection = () => {
                   
                   {/* Price */}
                   <p className="text-primary font-semibold text-lg mb-2">
-                    ${product.price_per_unit.toFixed(2)} / Ton
+                    {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)} / Ton
                   </p>
 
                   {/* Actions - View button only since whole card is clickable */}

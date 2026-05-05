@@ -25,6 +25,8 @@ interface Product {
   product_name: string;
   description: string | null;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   location: string;
   category: string | null;
   min_production: number;
@@ -53,6 +55,8 @@ const AdminProductEditModal = ({
     product_name: "",
     description: "",
     price_per_unit: 0,
+    min_price: 0,
+    max_price: 0,
     location: "",
     category: "Other",
     min_production: 0,
@@ -66,6 +70,8 @@ const AdminProductEditModal = ({
         product_name: product.product_name,
         description: product.description || "",
         price_per_unit: product.price_per_unit,
+        min_price: product.min_price ?? product.price_per_unit,
+        max_price: product.max_price ?? product.price_per_unit,
         location: product.location,
         category: product.category || "Other",
         min_production: product.min_production,
@@ -85,7 +91,9 @@ const AdminProductEditModal = ({
         .update({
           product_name: formData.product_name,
           description: formData.description || null,
-          price_per_unit: formData.price_per_unit,
+          price_per_unit: formData.min_price,
+          min_price: formData.min_price,
+          max_price: formData.max_price,
           location: formData.location,
           category: formData.category,
           min_production: formData.min_production,
@@ -144,15 +152,27 @@ const AdminProductEditModal = ({
             />
           </div>
 
-          <div>
-            <Label>Price per Unit ($)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={formData.price_per_unit}
-              onChange={(e) => setFormData({ ...formData, price_per_unit: parseFloat(e.target.value) || 0 })}
-              className="mt-1"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Min Price ($/Ton)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={formData.min_price}
+                onChange={(e) => setFormData({ ...formData, min_price: parseFloat(e.target.value) || 0 })}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Max Price ($/Ton)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                value={formData.max_price}
+                onChange={(e) => setFormData({ ...formData, max_price: parseFloat(e.target.value) || 0 })}
+                className="mt-1"
+              />
+            </div>
           </div>
 
           <div>

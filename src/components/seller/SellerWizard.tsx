@@ -19,7 +19,8 @@ export interface SellerFormData {
   photoPreview: string;
   minProduction: number;
   maxProduction: number;
-  pricePerUnit: number;
+  minPrice: number;
+  maxPrice: number;
   expiryDays: number | null;
   expiryDate: string;
 }
@@ -44,7 +45,8 @@ export default function SellerWizard() {
     photoPreview: "",
     minProduction: 100,
     maxProduction: 1000,
-    pricePerUnit: 0,
+    minPrice: 0,
+    maxPrice: 0,
     expiryDays: 30,
     expiryDate: "",
   });
@@ -60,7 +62,7 @@ export default function SellerWizard() {
       case 2:
         return formData.minProduction > 0 && formData.maxProduction >= formData.minProduction;
       case 3:
-        return formData.pricePerUnit > 0 && (formData.expiryDays !== null || formData.expiryDate !== "");
+        return formData.minPrice > 0 && formData.maxPrice >= formData.minPrice && (formData.expiryDays !== null || formData.expiryDate !== "");
       default:
         return true;
     }
@@ -119,7 +121,9 @@ export default function SellerWizard() {
         photo_url: photoUrl,
         min_production: formData.minProduction,
         max_production: formData.maxProduction,
-        price_per_unit: formData.pricePerUnit,
+        price_per_unit: formData.minPrice,
+        min_price: formData.minPrice,
+        max_price: formData.maxPrice,
         expiry_days: formData.expiryDays,
         expiry_date: formData.expiryDate || null,
       });
@@ -139,7 +143,8 @@ export default function SellerWizard() {
         photoPreview: "",
         minProduction: 100,
         maxProduction: 1000,
-        pricePerUnit: 0,
+        minPrice: 0,
+        maxPrice: 0,
         expiryDays: 30,
         expiryDate: "",
       });

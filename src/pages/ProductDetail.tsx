@@ -28,6 +28,7 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import IncotermsSelector from "@/components/product/IncotermsSelector";
 import AdminProductEditModal from "@/components/product/AdminProductEditModal";
 import EditableByproductsFlowchart from "@/components/product/EditableByproductsFlowchart";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 const ADMIN_EMAIL = "njohnscottrich@gmail.com";
 
@@ -39,6 +40,8 @@ interface Product {
   location: string;
   photo_url: string | null;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   verified: boolean;
   category: string | null;
   min_production: number;
@@ -373,10 +376,10 @@ export default function ProductDetail() {
               <div className="card-glass p-6 rounded-2xl sticky top-28 space-y-5">
                 {/* Price */}
                 <div className="text-center">
-                  <span className="text-sm text-muted-foreground uppercase tracking-wider">Price per Ton</span>
+                  <span className="text-sm text-muted-foreground uppercase tracking-wider">Price Range per Ton</span>
                   <div className="mt-2">
-                    <span className="text-4xl font-bold text-gradient-led">
-                      ${product.price_per_unit.toFixed(2)}
+                    <span className="text-3xl md:text-4xl font-bold text-gradient-led">
+                      {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
                     </span>
                   </div>
                 </div>
@@ -411,8 +414,14 @@ export default function ProductDetail() {
                 {/* Estimated Total */}
                 <div className="flex justify-between items-center p-3 rounded-xl bg-muted/30">
                   <span className="text-muted-foreground text-sm">Estimated Total:</span>
-                  <span className="text-xl font-bold text-gradient-gold">
-                    ${(product.price_per_unit * quantity).toFixed(2)}
+                  <span className="text-base md:text-lg font-bold text-gradient-gold text-right">
+                    {(() => {
+                      const min = (product.min_price ?? product.price_per_unit) * quantity;
+                      const max = (product.max_price ?? product.price_per_unit) * quantity;
+                      return min === max
+                        ? `$${min.toFixed(2)}`
+                        : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+                    })()}
                   </span>
                 </div>
 

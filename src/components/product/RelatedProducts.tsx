@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, CheckCircle, AlertTriangle, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 interface Product {
   id: string;
@@ -11,6 +12,8 @@ interface Product {
   location: string;
   photo_url: string | null;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   verified: boolean;
   category: string | null;
 }
@@ -43,7 +46,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
     try {
       let query = supabase
         .from("seller_products")
-        .select("id, product_name, location, photo_url, price_per_unit, verified, category")
+        .select("id, product_name, location, photo_url, price_per_unit, min_price, max_price, verified, category")
         .neq("id", currentProductId)
         .eq("status", "active")
         .limit(4);
@@ -62,7 +65,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
         const existingIds = data.map(p => p.id);
         const { data: moreProducts, error: moreError } = await supabase
           .from("seller_products")
-          .select("id, product_name, location, photo_url, price_per_unit, verified, category")
+          .select("id, product_name, location, photo_url, price_per_unit, min_price, max_price, verified, category")
           .neq("id", currentProductId)
           .eq("status", "active")
           .limit(4 - data.length);
@@ -165,7 +168,7 @@ const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) =
 
               <div className="flex items-center justify-between">
                 <span className="font-bold text-primary text-sm md:text-base">
-                  ${product.price_per_unit.toFixed(2)}
+                  {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
                 </span>
                 <Button variant="ghost" size="sm" className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary">
                   <Eye className="w-3 h-3 mr-1" />

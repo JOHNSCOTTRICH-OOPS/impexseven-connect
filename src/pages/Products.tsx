@@ -23,6 +23,7 @@ import AuthModal from "@/components/auth/AuthModal";
 import { useToast } from "@/hooks/use-toast";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import CategorySelector from "@/components/product/CategorySelector";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 interface Product {
   id: string;
@@ -30,6 +31,8 @@ interface Product {
   location: string;
   photo_url: string | null;
   price_per_unit: number;
+  min_price: number | null;
+  max_price: number | null;
   verified: boolean;
   category: string | null;
   min_production: number;
@@ -226,7 +229,7 @@ export default function Products() {
         {/* Price */}
         <div className="mb-4">
           <span className="text-2xl font-bold text-gradient-led">
-            ${product.price_per_unit.toFixed(2)}
+            {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
           </span>
           <span className="text-muted-foreground text-sm ml-1">/ Ton</span>
         </div>

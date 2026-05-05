@@ -21,29 +21,39 @@ export default function StepPricing({ formData, updateFormData }: Props) {
         </p>
       </div>
 
-      {/* Price */}
+      {/* Price Range */}
       <div className="space-y-2">
-        <Label htmlFor="price" className="flex items-center gap-2">
+        <Label className="flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-primary" />
-          Price per Unit
+          Price Range per Ton (USD)
         </Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-            $
-          </span>
-          <Input
-            id="price"
-            type="number"
-            min={0}
-            step={0.01}
-            placeholder="0.00"
-            value={formData.pricePerUnit || ""}
-            onChange={(e) =>
-              updateFormData({ pricePerUnit: parseFloat(e.target.value) || 0 })
-            }
-            className="pl-7 bg-input border-border focus:border-primary"
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+            <Input
+              type="number"
+              min={0}
+              step={0.01}
+              placeholder="Min"
+              value={formData.minPrice || ""}
+              onChange={(e) => updateFormData({ minPrice: parseFloat(e.target.value) || 0 })}
+              className="pl-7 bg-input border-border focus:border-primary"
+            />
+          </div>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+            <Input
+              type="number"
+              min={0}
+              step={0.01}
+              placeholder="Max"
+              value={formData.maxPrice || ""}
+              onChange={(e) => updateFormData({ maxPrice: parseFloat(e.target.value) || 0 })}
+              className="pl-7 bg-input border-border focus:border-primary"
+            />
+          </div>
         </div>
+        <p className="text-xs text-muted-foreground">Enter the minimum and maximum price you're willing to sell at.</p>
       </div>
 
       {/* Expiry Options */}
