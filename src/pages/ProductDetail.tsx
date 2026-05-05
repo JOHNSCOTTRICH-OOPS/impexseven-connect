@@ -414,8 +414,14 @@ export default function ProductDetail() {
                 {/* Estimated Total */}
                 <div className="flex justify-between items-center p-3 rounded-xl bg-muted/30">
                   <span className="text-muted-foreground text-sm">Estimated Total:</span>
-                  <span className="text-xl font-bold text-gradient-gold">
-                    ${(product.price_per_unit * quantity).toFixed(2)}
+                  <span className="text-base md:text-lg font-bold text-gradient-gold text-right">
+                    {(() => {
+                      const min = (product.min_price ?? product.price_per_unit) * quantity;
+                      const max = (product.max_price ?? product.price_per_unit) * quantity;
+                      return min === max
+                        ? `$${min.toFixed(2)}`
+                        : `$${min.toFixed(2)} - $${max.toFixed(2)}`;
+                    })()}
                   </span>
                 </div>
 
