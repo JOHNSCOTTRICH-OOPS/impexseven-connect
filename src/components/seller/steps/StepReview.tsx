@@ -84,10 +84,10 @@ export default function StepReview({ formData }: Props) {
           <div className="p-4 rounded-lg bg-muted/50 border border-border">
             <div className="flex items-center gap-2 text-primary mb-1">
               <DollarSign className="w-4 h-4" />
-              <span className="text-sm font-medium">Price per Unit</span>
+              <span className="text-sm font-medium">Price Range per Ton</span>
             </div>
             <p className="text-foreground font-semibold text-lg">
-              ${formData.pricePerUnit.toFixed(2)}
+              ${formData.minPrice.toFixed(2)} - ${formData.maxPrice.toFixed(2)}
             </p>
           </div>
 
