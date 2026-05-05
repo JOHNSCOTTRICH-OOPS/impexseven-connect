@@ -228,7 +228,7 @@ export default function Products() {
         {/* Price */}
         <div className="mb-4">
           <span className="text-2xl font-bold text-gradient-led">
-            ${product.price_per_unit.toFixed(2)}
+            {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
           </span>
           <span className="text-muted-foreground text-sm ml-1">/ Ton</span>
         </div>
