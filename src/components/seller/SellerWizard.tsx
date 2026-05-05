@@ -19,7 +19,8 @@ export interface SellerFormData {
   photoPreview: string;
   minProduction: number;
   maxProduction: number;
-  pricePerUnit: number;
+  minPrice: number;
+  maxPrice: number;
   expiryDays: number | null;
   expiryDate: string;
 }
