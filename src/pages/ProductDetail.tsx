@@ -376,10 +376,10 @@ export default function ProductDetail() {
               <div className="card-glass p-6 rounded-2xl sticky top-28 space-y-5">
                 {/* Price */}
                 <div className="text-center">
-                  <span className="text-sm text-muted-foreground uppercase tracking-wider">Price per Ton</span>
+                  <span className="text-sm text-muted-foreground uppercase tracking-wider">Price Range per Ton</span>
                   <div className="mt-2">
-                    <span className="text-4xl font-bold text-gradient-led">
-                      ${product.price_per_unit.toFixed(2)}
+                    <span className="text-3xl md:text-4xl font-bold text-gradient-led">
+                      {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)}
                     </span>
                   </div>
                 </div>
