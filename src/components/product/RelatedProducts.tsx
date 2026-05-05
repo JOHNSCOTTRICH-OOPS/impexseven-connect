@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, CheckCircle, AlertTriangle, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatPriceRange } from "@/lib/priceFormat";
 
 interface Product {
   id: string;
