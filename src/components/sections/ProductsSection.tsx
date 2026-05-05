@@ -168,7 +168,7 @@ const ProductsSection = () => {
                   
                   {/* Price */}
                   <p className="text-primary font-semibold text-lg mb-2">
-                    ${product.price_per_unit.toFixed(2)} / Ton
+                    {formatPriceRange(product.min_price, product.max_price, product.price_per_unit)} / Ton
                   </p>
 
                   {/* Actions - View button only since whole card is clickable */}
