@@ -70,6 +70,8 @@ const AdminProductEditModal = ({
         product_name: product.product_name,
         description: product.description || "",
         price_per_unit: product.price_per_unit,
+        min_price: product.min_price ?? product.price_per_unit,
+        max_price: product.max_price ?? product.price_per_unit,
         location: product.location,
         category: product.category || "Other",
         min_production: product.min_production,
