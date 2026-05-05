@@ -55,6 +55,8 @@ const AdminProductEditModal = ({
     product_name: "",
     description: "",
     price_per_unit: 0,
+    min_price: 0,
+    max_price: 0,
     location: "",
     category: "Other",
     min_production: 0,
